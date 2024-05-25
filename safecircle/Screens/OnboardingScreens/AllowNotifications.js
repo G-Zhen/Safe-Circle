@@ -4,16 +4,6 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function AllowNotifications() {
   const navigation = useNavigation();
-  const fadeAnim = useRef(new Animated.Value(0.05)).current; // Initial value for opacity: 0
-
-  useEffect(() => {
-    // Start the fade-in animation
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 500, // 0.5 seconds
-      useNativeDriver: true,
-    }).start();
-  }, [fadeAnim]);
 
   const requestNotificationPermission = async () => {
     if ("Notification" in window && "serviceWorker" in navigator) {
@@ -47,7 +37,6 @@ export default function AllowNotifications() {
   };
 
   return (
-    <Animated.View style={{ ...styles.container, opacity: fadeAnim }}>
       <ImageBackground
         source={require('../../public/assets/NotificationsAllow.png')} // replace with your image path
         style={styles.background}
@@ -61,7 +50,6 @@ export default function AllowNotifications() {
           </Pressable>
         </View>
       </ImageBackground>
-    </Animated.View>
   );
 }
 

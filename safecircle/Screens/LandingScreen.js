@@ -1,29 +1,25 @@
-import React, { useEffect, useRef } from 'react';
-import { StyleSheet, Animated, ImageBackground } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, ImageBackground, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const LandingScreen = () => {
-  const fadeAnim = useRef(new Animated.Value(1)).current;
   const navigation = useNavigation();
 
   useEffect(() => {
-    // Start the fade-out animation
-    Animated.timing(fadeAnim, {
-      toValue: 0.0,
-      duration: 4000, // 4 seconds
-      useNativeDriver: true,
-    }).start(() => {
-      // Navigate to Instructions page after the animation completes
+    // Delay the navigation to the Instructions page by 2 seconds
+    const timeout = setTimeout(() => {
       navigation.navigate('Instructions');
-    });
-  }, [fadeAnim, navigation]);
+    }, 2000); // 2 seconds delay
+
+    return () => clearTimeout(timeout); // Clear the timeout if the component unmounts
+  }, [navigation]);
 
   return (
-    <Animated.View style={{ ...styles.container, opacity: fadeAnim }}>
+    <View style={styles.container}>
       <ImageBackground source={require('../public/assets/LandingScreen.png')} style={styles.landingPage}>
         {/* Any additional content for the LandingScreen */}
       </ImageBackground>
-    </Animated.View>
+    </View>
   );
 };
 
@@ -34,23 +30,17 @@ const styles = StyleSheet.create({
   landingPage: {
     height: '100%',
     width: '100%',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    color: 'white',
-    fontSize: '24px',
   },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    padding: '10px',
-    borderRadius: '5px',
+    padding: 10,
+    borderRadius: 5,
   },
   text: {
     color: '#fff',
-    fontSize: '24px',
+    fontSize: 24,
   },
 });
 
