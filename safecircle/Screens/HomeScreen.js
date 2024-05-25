@@ -9,7 +9,7 @@ export default function HomeScreen() {
   const handleSignOut = async () => {
     try {
       await logout();
-      navigation.navigate('Login');
+      navigation.navigate('LoginScreen');
     } catch (error) {
       console.error("Error signing out: ", error);
     }
