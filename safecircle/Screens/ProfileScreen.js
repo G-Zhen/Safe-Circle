@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import { logout } from '../Backend/firebase/EmailPasswordSignIn';
 import { useNavigation } from '@react-navigation/native';
+import TabBar from './TabBar';
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
@@ -19,6 +20,7 @@ export default function ProfileScreen() {
     <View style={styles.container}>
       <Text>Profile!</Text>
       <Button title="Sign Out" onPress={handleSignOut} />
+      <TabBar />
     </View>
   );
 }
