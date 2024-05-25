@@ -8,7 +8,7 @@ import Instructions from './screens/Instructions';
 import KeyFeatures from './screens/KeyFeatures';
 import AllowNotifications from './screens/OnboardingScreens/AllowNotifications';
 import AllowLocationShare from './screens/OnboardingScreens/AllowLocationShare';
-import AllowContacts from './screens/OnboardingScreens/AllowContacts';
+import AllowContactAccess from './screens/OnboardingScreens/AllowContactAccess';
 
 const Stack = createStackNavigator();
 
@@ -21,7 +21,7 @@ export default function AppNavigator() {
         <Stack.Screen name="KeyFeatures" component={KeyFeatures} options={{ headerShown: false }} />
         <Stack.Screen name="AllowNotifications" component={AllowNotifications} options={{ headerShown: false }} />
         <Stack.Screen name="AllowLocationShare" component={AllowLocationShare} options={{ headerShown: false }} />
-        <Stack.Screen name="AllowContacts" component={AllowContacts} options={{ headerShown: false }} />
+        <Stack.Screen name="AllowContactAccess" component={AllowContactAccess} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
       </Stack.Navigator>

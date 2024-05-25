@@ -10,11 +10,11 @@ const LandingScreen = () => {
     // Start the fade-out animation
     Animated.timing(fadeAnim, {
       toValue: 0,
-      duration: 10000, // 2 seconds
+      duration: 8000, // 2 seconds
       useNativeDriver: true,
     }).start(() => {
       // Navigate to Onboarding page after the animation completes
-      navigation.navigate('Onboarding');
+      navigation.navigate('Instructions');
     });
   }, [fadeAnim, navigation]);
 
