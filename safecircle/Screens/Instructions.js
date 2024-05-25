@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function OnboardingScreen() {
+export default function Instructions() {
   const navigation = useNavigation();
 
   return (

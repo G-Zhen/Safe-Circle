@@ -4,7 +4,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import LandingScreen from './screens/LandingScreen';
-import OnboardingScreen from './screens/OnboardingScreen';
+import Instructions from './screens/Instructions';
+import KeyFeatures from './screens/KeyFeatures';
+import AllowNotifications from './screens/OnboardingScreens/AllowNotifications';
+import AllowLocationShare from './screens/OnboardingScreens/AllowLocationShare';
+import AllowContacts from './screens/OnboardingScreens/AllowContacts';
 
 const Stack = createStackNavigator();
 
@@ -13,8 +17,11 @@ export default function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Landing">
         <Stack.Screen name="Landing" component={LandingScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Onboarding" component={OnboardingScreen} options={{ headerShown: false }} />
-
+        <Stack.Screen name="Instructions" component={Instructions} options={{ headerShown: false }} />
+        <Stack.Screen name="KeyFeatures" component={KeyFeatures} options={{ headerShown: false }} />
+        <Stack.Screen name="AllowNotifications" component={AllowNotifications} options={{ headerShown: false }} />
+        <Stack.Screen name="AllowLocationShare" component={AllowLocationShare} options={{ headerShown: false }} />
+        <Stack.Screen name="AllowContacts" component={AllowContacts} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
       </Stack.Navigator>
