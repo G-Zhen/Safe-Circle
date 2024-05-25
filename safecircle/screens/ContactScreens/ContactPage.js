@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, FlatList, Dimensions, ImageBackground } from 'react-native';
+import Fuse from 'fuse.js';
 import TabBar from '../TabBar';
+import Header from '../Header';
 
 const { width, height } = Dimensions.get('window');
 
@@ -12,6 +14,25 @@ const ContactPage = () => {
     { id: '4', name: 'Jamie', phone: '(123) 456 7891' },
   ];
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredContacts, setFilteredContacts] = useState(contacts);
+
+  const fuse = new Fuse(contacts, {
+    keys: ['name', 'phone'],
+    includeScore: true,
+  });
+
+  const handleSearch = (text) => {
+    setSearchTerm(text);
+    if (text === '') {
+      setFilteredContacts(contacts);
+    } else {
+      const results = fuse.search(text);
+      const matchedContacts = results.map(result => result.item);
+      setFilteredContacts(matchedContacts);
+    }
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.contactItem}>
       <View style={styles.contactInfo}>
@@ -22,10 +43,10 @@ const ContactPage = () => {
         </View>
       </View>
       <View style={styles.contactActions}>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity style={styles.actionButtonShare}>
           <Image style={styles.actionIcon} source={require('../../public/assets/ShareIcon.png')} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity style={styles.actionButtonDelete}>
           <Image style={styles.actionIcon} source={require('../../public/assets/DeleteIcon.png')} />
         </TouchableOpacity>
       </View>
@@ -33,18 +54,16 @@ const ContactPage = () => {
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.logoContainer}>
-          <Text style={styles.logoText}>SAFE CIRCLE</Text>
-        </View>
-        <Text style={styles.headerTitle}>Emergency Contacts</Text>
-        <View style={styles.statusContainer}>
-          <Text style={styles.statusText}>Farahnaz's Status: Safe</Text>
-        </View>
+    <ImageBackground
+      source={require('../../public/assets/plain-background.png')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <Header title="Emergency Contacts" />
+
+      <View style={styles.container}>
         <Text style={styles.pinnedTitle}>Pinned:</Text>
         <View style={styles.pinnedContacts}>
-          {/* Add pinned contacts here */}
           {contacts.slice(0, 4).map(contact => (
             <View key={contact.id} style={styles.pinnedContact}>
               <Image style={styles.pinnedImage} source={require('../../public/assets/ProfileIcon.png')} />
@@ -53,60 +72,38 @@ const ContactPage = () => {
           ))}
         </View>
         <View style={styles.searchContainer}>
-          <TextInput style={styles.searchInput} placeholder="Search" />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search"
+            value={searchTerm}
+            onChangeText={handleSearch}
+          />
           <TouchableOpacity style={styles.addButton}>
             <Text style={styles.addButtonText}>+</Text>
           </TouchableOpacity>
         </View>
+        <FlatList
+          data={filteredContacts}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          contentContainerStyle={styles.contactList}
+        />
+        <TabBar />
       </View>
-      <FlatList
-        data={contacts}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.contactList}
-      />
-      <TabBar />
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#4B47A3',
-  },
-  header: {
-    padding: 20,
-    backgroundColor: '#4B47A3',
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    alignItems: 'center',
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  logoText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  headerTitle: {
-    color: '#FFD700',
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  statusContainer: {
-    backgroundColor: '#B9E0D3',
-    borderRadius: 10,
-    paddingVertical: 5,
-    paddingHorizontal: 15,
-    marginBottom: 20,
-  },
-  statusText: {
-    fontSize: 16,
-    color: '#000000',
+    padding: 15,
+    paddingBottom: 100,
   },
   pinnedTitle: {
     color: '#FFFFFF',
@@ -163,7 +160,6 @@ const styles = StyleSheet.create({
   contactItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#6B67D3',
     borderRadius: 10,
     padding: 10,
     marginVertical: 5,
@@ -191,24 +187,26 @@ const styles = StyleSheet.create({
   contactActions: {
     flexDirection: 'row',
   },
-  actionButton: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
+  actionButtonShare: {
+    backgroundColor: '#B7BBDB',
+    borderRadius: 20,
     padding: 5,
     marginLeft: 5,
+    borderWidth: 2,
+    borderColor: '#17156',
+  },
+  actionButtonDelete: {
+    backgroundColor: '#F2B7B7',
+    borderRadius: 20,
+    padding: 5,
+    marginLeft: 5,
+    borderWidth: 2,
+
+    borderColor: '#17156',
   },
   actionIcon: {
     width: 20,
     height: 20,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#D3D3D3',
-    paddingVertical: 10,
-  },
-  footerButton: {
-    alignItems: 'center',
   },
 });
 

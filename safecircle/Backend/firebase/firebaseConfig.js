@@ -13,7 +13,7 @@ const firebaseConfig = {
 };
 
 // Validate that all necessary environment variables are loaded
-if (!firebaseConfig.apiKey && !firebaseConfig.authDomain && !firebaseConfig.projectId && !firebaseConfig.storageBucket && !firebaseConfig.messagingSenderId && !firebaseConfig.appId && !firebaseConfig.measurementId) {
+if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId || !firebaseConfig.storageBucket || !firebaseConfig.messagingSenderId || !firebaseConfig.appId || !firebaseConfig.measurementId) {
   throw new Error("Missing Firebase configuration values. Please check your .env file.");
 }
 

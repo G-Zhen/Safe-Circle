@@ -14,17 +14,21 @@ import ResourcesScreen from './screens/ResourcesScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import TabBar from './screens/TabBar';
+import { StatusProvider } from './screens/StatusContext';
+
 
 // contacts, locations - grace testing
+// import ContactsScreen from './screens/ContactScreens/ContactPage_G';
+// import ShareLocationScreen from './screens/LocationScreens/ShareLocationScreen';
 
-import ContactsScreen from './screens/ContactScreens/ContactPage_G';
-import ShareLocationScreen from './screens/LocationScreens/ShareLocationScreen';
+// import MapScreen from './src/MapScreen'; 
 
 const Stack = createStackNavigator();
 
 export default function AppNavigator() {
   return (
-    <NavigationContainer>
+    <StatusProvider>
+      <NavigationContainer>
       <Stack.Navigator initialRouteName="Landing">
         <Stack.Screen name="Landing" component={LandingScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Instructions" component={Instructions} options={{ headerShown: false }} />
@@ -39,7 +43,11 @@ export default function AppNavigator() {
         <Stack.Screen name="Resources" component={ResourcesScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }}/>
+
+        {/* <Stack.Screen name="Map" component={MapScreen} /> */}
       </Stack.Navigator>
     </NavigationContainer>
+    </StatusProvider>
+    
   );
 }
