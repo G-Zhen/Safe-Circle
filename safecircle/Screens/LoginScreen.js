@@ -21,7 +21,7 @@ export default function LoginScreen() {
       setUser(user);
       setLoading(false);
       if (user) {
-        navigation.navigate('Home');
+        navigation.navigate('TabBar');
       }
     });
 
