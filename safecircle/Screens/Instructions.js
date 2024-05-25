@@ -4,19 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function Instructions() {
   const navigation = useNavigation();
-  const fadeAnim = useRef(new Animated.Value(0.05)).current; // Initial value for opacity: 0
-
-  useEffect(() => {
-    // Start the fade-in animation
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 1500, // 2 seconds
-      useNativeDriver: true,
-    }).start();
-  }, [fadeAnim]);
-
+  
   return (
-    <Animated.View style={{ ...styles.container, opacity: fadeAnim }}>
       <ImageBackground
         source={require('../public/assets/Instructions.png')} // replace with your image path
         style={styles.background}
@@ -27,7 +16,6 @@ export default function Instructions() {
           </Pressable>
         </View>
       </ImageBackground>
-    </Animated.View>
   );
 }
 
