@@ -76,7 +76,7 @@ export default function LoginScreen() {
     <ImageBackground source={require('../public/assets/DefaultBackground.png')} style={styles.backgroundImage}>
       <View style={styles.container}>
         <View style={styles.card}>
-          <Text style={styles.title}>Create an Account</Text>
+          <Text style={styles.title}>Sign In</Text>
 
           <TextInput
             style={styles.input}
@@ -93,6 +93,9 @@ export default function LoginScreen() {
             onChangeText={setPassword}
             secureTextEntry
           />
+           <Pressable onPress={handleEmailLogin} style={styles.button}>
+            <Text style={styles.buttonText}>Login with Email</Text>
+          </Pressable>
           <Pressable onPress={handleEmailSignUp} style={styles.button}>
             <Text style={styles.buttonText}>Sign Up with Email</Text>
           </Pressable>
@@ -132,7 +135,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: 345,
-    height: 423,
+    height: 480,
     backgroundColor: '#A3A8CE', // pastel purple color
     borderRadius: 20,
     padding: 20,

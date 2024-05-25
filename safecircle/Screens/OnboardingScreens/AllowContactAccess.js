@@ -4,16 +4,6 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function AllowContactAccess() {
   const navigation = useNavigation();
-  const fadeAnim = useRef(new Animated.Value(0.05)).current; // Initial value for opacity: 0
-
-  useEffect(() => {
-    // Start the fade-in animation
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 500, // 0.5 seconds
-      useNativeDriver: true,
-    }).start();
-  }, [fadeAnim]);
 
   const requestContactsPermission = async () => {
     if ("contacts" in navigator && "ContactsManager" in window) {
@@ -38,7 +28,6 @@ export default function AllowContactAccess() {
   };
 
   return (
-    <Animated.View style={{ ...styles.container, opacity: fadeAnim }}>
       <ImageBackground
         source={require('../../public/assets/AllowContact.png')} // replace with your image path
         style={styles.background}
@@ -52,7 +41,6 @@ export default function AllowContactAccess() {
           </Pressable>
         </View>
       </ImageBackground>
-    </Animated.View>
   );
 }
 

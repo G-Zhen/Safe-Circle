@@ -4,18 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function KeyFeatures() {
   const navigation = useNavigation();
-  const fadeAnim = useRef(new Animated.Value(0.05)).current; // Initial value for opacity: 0
 
-  useEffect(() => {
-    // Start the fade-in animation
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 500, // 2 seconds
-      useNativeDriver: true,
-    }).start();
-  }, [fadeAnim]);
   return (
-    <Animated.View style={{ ...styles.container, opacity: fadeAnim }}>
       <ImageBackground
         source={require('../public/assets/KeyFeatures.png')} // replace with your image path
         style={styles.background}
@@ -26,7 +16,6 @@ export default function KeyFeatures() {
           </Pressable>
         </View>
       </ImageBackground>
-    </Animated.View>
   );
 }
 
