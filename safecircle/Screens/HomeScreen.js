@@ -19,6 +19,9 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <Text>Hello, you're in!</Text>
       <Button title="Sign Out" onPress={handleSignOut} />
+
+      <Button title="Go to Contacts" onPress={() => navigation.navigate('ContactsScreen')} />
+      <Button title="Go to Share Location" onPress={() => navigation.navigate('ShareLocationScreen')} />
     </View>
   );
 }

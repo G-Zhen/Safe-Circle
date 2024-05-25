@@ -9,6 +9,11 @@ import KeyFeatures from './screens/KeyFeatures';
 import AllowNotifications from './screens/OnboardingScreens/AllowNotifications';
 import AllowLocationShare from './screens/OnboardingScreens/AllowLocationShare';
 import AllowContactAccess from './screens/OnboardingScreens/AllowContactAccess';
+// contacts, locations - grace testing
+
+import ContactsScreen from './screens/ContactScreens/ContactPage_G';
+import ShareLocationScreen from './screens/LocationScreens/ShareLocationScreen';
+
 
 const Stack = createStackNavigator();
 
@@ -24,7 +29,11 @@ export default function AppNavigator() {
         <Stack.Screen name="AllowLocationShare" component={AllowLocationShare} options={{ headerShown: false }} />
         <Stack.Screen name="AllowContactAccess" component={AllowContactAccess} options={{ headerShown: false }} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }}/>
+        
         <Stack.Screen name="Home" component={HomeScreen} />
+
+        <Stack.Screen name="ContactsScreen" component={ContactsScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="ShareLocationScreen" component={ShareLocationScreen} options={{ headerShown: false }}/>
       </Stack.Navigator>
       
     </NavigationContainer>
