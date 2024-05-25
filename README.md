@@ -17,3 +17,18 @@ yarn install
 npm i
 yarn web
 ```
+
+### for chakra 
+```
+yarn add native-base
+yarn add @react-native-async-storage/async-storage
+yarn add @react-native-community/netinfo
+yarn add react-native-safe-area-context
+
+
+yarn add @react-native-community/masked-view
+yarn add @react-native-svg
+yarn add react-native-safe-area-context
+yarn add react-native-screens
+
+```
