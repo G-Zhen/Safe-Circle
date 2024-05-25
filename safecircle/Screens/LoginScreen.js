@@ -7,7 +7,7 @@ import signInWithGoogle from '../Backend/firebase/GoogleSignIn';
 import { signUpWithEmail, loginWithEmail } from '../Backend/firebase/EmailPasswordSignIn';
 import { useNavigation } from '@react-navigation/native';
 
-export default function LoginScreen() {
+const LoginScreen = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState('');
@@ -103,7 +103,7 @@ export default function LoginScreen() {
       <StatusBar style="auto" />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -131,3 +131,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+export default LoginScreen;
