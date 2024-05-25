@@ -14,11 +14,11 @@ import ResourcesScreen from './screens/ResourcesScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import TabBar from './screens/TabBar';
+
 // contacts, locations - grace testing
 
 import ContactsScreen from './screens/ContactScreens/ContactPage_G';
 import ShareLocationScreen from './screens/LocationScreens/ShareLocationScreen';
-
 
 const Stack = createStackNavigator();
 
@@ -34,8 +34,16 @@ export default function AppNavigator() {
         <Stack.Screen name="AllowContactAccess" component={AllowContactAccess} options={{ headerShown: false }} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }} />
         <Stack.Screen name="TabBar" component={TabBar} options={{ headerShown: false }} />
-        
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Contacts" component={ContactPage} />
+        <Stack.Screen name="Resources" component={ResourcesScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
+        
+        <Stack.Screen name="Contacts" component={ContactPage} />
+        <Stack.Screen name="Resources" component={ResourcesScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
