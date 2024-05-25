@@ -23,7 +23,7 @@ export default function AppNavigator() {
         <Stack.Screen name="AllowNotifications" component={AllowNotifications} options={{ headerShown: false }} />
         <Stack.Screen name="AllowLocationShare" component={AllowLocationShare} options={{ headerShown: false }} />
         <Stack.Screen name="AllowContactAccess" component={AllowContactAccess} options={{ headerShown: false }} />
-        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="Home" component={HomeScreen} />
       </Stack.Navigator>
       

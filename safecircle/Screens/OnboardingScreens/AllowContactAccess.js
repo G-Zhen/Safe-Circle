@@ -1,54 +1,104 @@
-import React from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { StyleSheet, Text, View, Pressable, Animated, ImageBackground, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export default function AllowContactAccess() {
   const navigation = useNavigation();
+  const fadeAnim = useRef(new Animated.Value(0.05)).current; // Initial value for opacity: 0
+
+  useEffect(() => {
+    // Start the fade-in animation
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500, // 0.5 seconds
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
+
+  const requestContactsPermission = async () => {
+    if ("contacts" in navigator && "ContactsManager" in window) {
+      try {
+        const contacts = await navigator.contacts.select(['name', 'email'], { multiple: true });
+        console.log('Contacts permission granted');
+        console.log(contacts);
+        Alert.alert('Contacts permission granted');
+      } catch (error) {
+        console.log('Contacts permission denied', error);
+        Alert.alert('Contacts permission denied');
+      }
+    } else {
+      console.log('Contacts API not supported in this browser.');
+      Alert.alert('Contacts API not supported in this browser.');
+    }
+    navigation.navigate('LoginScreen');
+  };
+
+  const handleSkip = () => {
+    navigation.navigate('LoginScreen');
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>AllowContactAccess</Text>
-      <View style={styles.infoBox}>
-        <Text style={styles.infoText}>Your informational content goes here...</Text>
-      </View>
-      <Pressable onPress={() => navigation.navigate('Login')} style={styles.button}>
-        <Text style={styles.buttonText}>Next</Text>
-      </Pressable>
-    </View>
+    <Animated.View style={{ ...styles.container, opacity: fadeAnim }}>
+      <ImageBackground
+        source={require('../../public/assets/AllowContact.png')} // replace with your image path
+        style={styles.background}
+      >
+        <View style={styles.buttonContainer}>
+          <Pressable onPress={requestContactsPermission} style={styles.button}>
+            <Text style={styles.buttonText}>Turn on Contacts Sharing</Text>
+          </Pressable>
+          <Pressable onPress={handleSkip} style={styles.skipButton}>
+            <Text style={styles.skipButtonText}>Skip</Text>
+          </Pressable>
+        </View>
+      </ImageBackground>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000', // Adjust as needed
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  infoBox: {
-    width: '80%',
-    padding: 20,
-    backgroundColor: '#ccc', // Adjust as needed
-    borderRadius: 10,
-    marginVertical: 20,
-  },
-  infoText: {
-    fontSize: 16,
-    color: '#000',
+  buttonContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginBottom: 180, // Adjust this value to control the distance from the bottom
   },
   button: {
-    backgroundColor: '#4285F4',
+    backgroundColor: '#F6F7B0',
     padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
+    borderRadius: 20,
+    width: 370,
+    marginBottom: 10, // Add some space between the buttons
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 16,
+    color: 'black',
+    fontSize: 20,
+    textAlign: 'center',
+    fontWeight: 'semibold',
+  },
+  skipButton: {
+    marginTop: 10, // Add some space between the buttons
+    backgroundColor: '#E7E1FA', // Different background color for skip button
+    padding: 10,
+    borderRadius: 20,
+    width: 370,
+  },
+  skipButtonText: {
+    color: 'black',
+    fontSize: 20,
+    textAlign: 'center',
+    fontWeight: 'semibold',
   },
 });
