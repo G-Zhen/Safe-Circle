@@ -1,46 +1,57 @@
-import React from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { StyleSheet, Text, View, ImageBackground, Animated } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function LandingScreen() {
+const LandingScreen = () => {
+  const fadeAnim = useRef(new Animated.Value(1)).current;
   const navigation = useNavigation();
 
+  useEffect(() => {
+    // Start the fade-out animation
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 10000, // 2 seconds
+      useNativeDriver: true,
+    }).start(() => {
+      // Navigate to Onboarding page after the animation completes
+      navigation.navigate('Onboarding');
+    });
+  }, [fadeAnim, navigation]);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>SAFE CIRCLE</Text>
-      <Text style={styles.subtitle}>Protection in every phase</Text>
-      <Pressable onPress={() => navigation.navigate('Onboarding')} style={styles.button}>
-        <Text style={styles.buttonText}>Next</Text>
-      </Pressable>
-    </View>
+    <Animated.View style={{ ...styles.container, opacity: fadeAnim }}>
+      <ImageBackground source={require('../public/assets/LandingScreen.png')} style={styles.landingPage}>
+
+      </ImageBackground>
+    </Animated.View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  landingPage: {
+    height: '100%',
+    width: '100%',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000', // Adjust as needed
+    color: 'white',
+    fontSize: '24px',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: '10px',
+    borderRadius: '5px',
+  },
+  text: {
     color: '#fff',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#fff',
-    marginVertical: 20,
-  },
-  button: {
-    backgroundColor: '#4285F4',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
+    fontSize: '24px',
   },
 });
+
+export default LandingScreen;
