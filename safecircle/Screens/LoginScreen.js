@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Pressable, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable, ActivityIndicator, ImageBackground } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { auth } from '../Backend/firebase/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -71,46 +71,65 @@ export default function LoginScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text>Login with</Text>
+    <ImageBackground source={require('../assets/newAppBackground.png')} style={styles.backgroundImage} imageStyle={{resizeMode: 'cover'}}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Login with</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <Pressable onPress={handleEmailLogin} style={styles.button}>
-        <Text style={styles.buttonText}>Login with Email</Text>
-      </Pressable>
-      <Pressable onPress={handleEmailSignUp} style={styles.button}>
-        <Text style={styles.buttonText}>Sign Up with Email</Text>
-      </Pressable>
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          placeholderTextColor="#000"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="#000"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+        <Pressable onPress={handleEmailLogin} style={styles.button}>
+          <Text style={styles.buttonText}>Login with Email</Text>
+        </Pressable>
+        <Pressable onPress={handleEmailSignUp} style={styles.button}>
+          <Text style={styles.buttonText}>Sign Up with Email</Text>
+        </Pressable>
 
-      <Text>or</Text>
+        <Text style={styles.orText}>or</Text>
 
-      <Pressable onPress={handleGoogleSignIn} style={styles.button}>
-        <Text style={styles.buttonText}>Google</Text>
-      </Pressable>
+        <Pressable onPress={handleGoogleSignIn} style={styles.button}>
+          <Text style={styles.buttonText}>Google</Text>
+        </Pressable>
 
-      <StatusBar style="auto" />
-    </View>
+        <StatusBar style="auto" />
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  logo: {
+    width: 150,
+    height: 150,
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 24,
+    color: '#fff',
+    marginBottom: 20,
   },
   input: {
     width: '80%',
@@ -119,15 +138,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
+    backgroundColor: '#fff',
   },
   button: {
-    backgroundColor: '#4285F4',
+    backgroundColor: '#FFDD00',
     padding: 10,
     borderRadius: 5,
     margin: 10,
+    width: '80%',
+    alignItems: 'center',
   },
   buttonText: {
-    color: '#fff',
+    color: '#000',
     fontSize: 16,
+  },
+  orText: {
+    color: '#fff',
+    marginVertical: 10,
   },
 });
