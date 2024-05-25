@@ -39,11 +39,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Resources" component={ResourcesScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />
-        
-        <Stack.Screen name="Contacts" component={ContactPage} />
-        <Stack.Screen name="Resources" component={ResourcesScreen} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="Settings" component={SettingsScreen} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
