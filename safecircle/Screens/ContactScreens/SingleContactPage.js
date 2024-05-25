@@ -1,12 +1,16 @@
 import React from 'react';
 import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, ImageBackground, Dimensions } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
 const SingleContactPage = () => {
+  const route = useRoute();
+  const { contact } = route.params;
+
   return (
-    <ImageBackground 
-      source={require('../../public/assets/DefaultBackground.png')} // Update with your background image path
+    <ImageBackground
+      source={require('../../public/assets/DefaultBackground.png')}
       style={styles.background}
     >
       <View style={styles.container}>
@@ -20,12 +24,12 @@ const SingleContactPage = () => {
         <View style={styles.profileContainer}>
           <Image style={styles.profileImage} source={require('../../public/assets/ProfileIcon.png')} />
           <View style={styles.profileInfo}>
-            <Text style={styles.name}>Anna</Text>
-            <Text style={styles.contactInfo}>(123) 456 7891  anna@gmail.com</Text>
+            <Text style={styles.name}>{contact.name}</Text>
+            <Text style={styles.contactInfo}>{contact.phone}</Text>
           </View>
         </View>
-        <TextInput style={styles.input} placeholder="Name" />
-        <TextInput style={styles.input} placeholder="Phone number" />
+        <TextInput style={styles.input} placeholder="Name" value={contact.name} />
+        <TextInput style={styles.input} placeholder="Phone number" value={contact.phone} />
         <TextInput style={styles.input} placeholder="Email" />
         <TextInput style={styles.input} placeholder="Address" />
         <TouchableOpacity style={styles.editButton}>

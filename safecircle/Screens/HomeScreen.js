@@ -23,6 +23,7 @@ export default function HomeScreen() {
 
       <Button title="Go to Contacts" onPress={() => navigation.navigate('ContactsScreen')} />
       <Button title="Go to Share Location" onPress={() => navigation.navigate('ShareLocationScreen')} />
+      <TabBar />
     </View>
   );
 }

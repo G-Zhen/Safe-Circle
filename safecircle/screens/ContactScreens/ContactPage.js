@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, FlatList, Dimensions, ImageBackground } from 'react-native';
+import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, FlatList, Dimensions, ImageBackground, Share, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Fuse from 'fuse.js';
 import TabBar from '../TabBar';
 import Header from '../Header';
@@ -7,15 +8,17 @@ import Header from '../Header';
 const { width, height } = Dimensions.get('window');
 
 const ContactPage = () => {
-  const contacts = [
+  const initialContacts = [
     { id: '1', name: 'Anna', phone: '(123) 456 7891' },
     { id: '2', name: 'Grace', phone: '(123) 456 7891' },
     { id: '3', name: 'Hannah', phone: '(123) 456 7891' },
     { id: '4', name: 'Jamie', phone: '(123) 456 7891' },
   ];
 
+  const navigation = useNavigation();
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredContacts, setFilteredContacts] = useState(contacts);
+  const [filteredContacts, setFilteredContacts] = useState(initialContacts);
+  const [contacts, setContacts] = useState(initialContacts);
 
   const fuse = new Fuse(contacts, {
     keys: ['name', 'phone'],
@@ -33,24 +36,59 @@ const ContactPage = () => {
     }
   };
 
+  const handleShare = async (contact) => {
+    try {
+      await Share.share({
+        message: `Contact Name: ${contact.name}\nPhone Number: ${contact.phone}`,
+      });
+    } catch (error) {
+      Alert.alert('Error', 'An error occurred while trying to share the contact');
+    }
+  };
+
+  const handleDelete = (contactId) => {
+    Alert.alert(
+      'Delete Contact',
+      'Are you sure you want to delete this contact?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            const updatedContacts = contacts.filter(contact => contact.id !== contactId);
+            setContacts(updatedContacts);
+            setFilteredContacts(updatedContacts);
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   const renderItem = ({ item }) => (
-    <View style={styles.contactItem}>
-      <View style={styles.contactInfo}>
-        <Image style={styles.contactImage} source={require('../../public/assets/ProfileIcon.png')} />
-        <View>
-          <Text style={styles.contactName}>{item.name}</Text>
-          <Text style={styles.contactPhone}>{item.phone}</Text>
+    <TouchableOpacity onPress={() => navigation.navigate('SingleContactPage', { contact: item })}>
+      <View style={styles.contactItem}>
+        <View style={styles.contactInfo}>
+          <Image style={styles.contactImage} source={require('../../public/assets/ProfileIcon.png')} />
+          <View>
+            <Text style={styles.contactName}>{item.name}</Text>
+            <Text style={styles.contactPhone}>{item.phone}</Text>
+          </View>
+        </View>
+        <View style={styles.contactActions}>
+          <TouchableOpacity style={styles.actionButtonShare} onPress={() => handleShare(item)}>
+            <Image style={styles.actionIcon} source={require('../../public/assets/ShareIcon.png')} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButtonDelete} onPress={() => handleDelete(item.id)}>
+            <Image style={styles.actionIcon} source={require('../../public/assets/DeleteIcon.png')} />
+          </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.contactActions}>
-        <TouchableOpacity style={styles.actionButtonShare}>
-          <Image style={styles.actionIcon} source={require('../../public/assets/ShareIcon.png')} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButtonDelete}>
-          <Image style={styles.actionIcon} source={require('../../public/assets/DeleteIcon.png')} />
-        </TouchableOpacity>
-      </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -201,7 +239,6 @@ const styles = StyleSheet.create({
     padding: 5,
     marginLeft: 5,
     borderWidth: 2,
-
     borderColor: '#17156',
   },
   actionIcon: {

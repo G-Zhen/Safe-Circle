@@ -10,6 +10,7 @@ import AllowNotifications from './screens/OnboardingScreens/AllowNotifications';
 import AllowLocationShare from './screens/OnboardingScreens/AllowLocationShare';
 import AllowContactAccess from './screens/OnboardingScreens/AllowContactAccess';
 import ContactPage from './/screens/ContactScreens/ContactPage';
+import SingleContactPage from './screens/ContactScreens/SingleContactPage';
 import ResourcesScreen from './screens/ResourcesScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import SettingsScreen from './screens/SettingsScreen';
@@ -40,6 +41,7 @@ export default function AppNavigator() {
         <Stack.Screen name="TabBar" component={TabBar} options={{ headerShown: false }} />
         <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="Contacts" component={ContactPage}options={{ headerShown: false }} />
+        <Stack.Screen name="SingleContact" component={SingleContactPage} options={{ headerShown: false }}/>
         <Stack.Screen name="Resources" component={ResourcesScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }}/>

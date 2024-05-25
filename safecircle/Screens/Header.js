@@ -1,19 +1,9 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { StatusContext } from './StatusContext';
 
 const Header = ({ title }) => {
-    const [status, setStatus] = useState('Safe');
-    const [statusColor, setStatusColor] = useState('#92BDA6');
-
-    const toggleStatus = () => {
-        if (status === 'Safe') {
-            setStatus('Danger');
-            setStatusColor('#F2B7B7');
-        } else {
-            setStatus('Safe');
-            setStatusColor('#92BDA6');
-        }
-    };
+    const { status, statusColor, toggleStatus } = useContext(StatusContext);
 
     return (
         <View style={styles.headerContainer}>
@@ -43,7 +33,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         paddingRight: 30,
         color: '#F6F7B0',
-
     },
     statusButton: {
         padding: 10,
