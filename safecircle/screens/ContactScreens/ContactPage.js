@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, FlatList, Dimensions, ImageBackground } from 'react-native';
+import TabBar from '../TabBar';
 
 const { width, height } = Dimensions.get('window');
 
@@ -64,23 +65,7 @@ const ContactPage = () => {
         keyExtractor={item => item.id}
         contentContainerStyle={styles.contactList}
       />
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.footerButton}>
-          <Text>Explore</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.footerButton}>
-          <Text>Contacts</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.footerButton}>
-          <Text>Resources</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.footerButton}>
-          <Text>Profile</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.footerButton}>
-          <Text>Settings</Text>
-        </TouchableOpacity>
-      </View>
+      <TabBar />
     </View>
   );
 };
