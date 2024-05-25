@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, ImageBackground, Animated } from 'react-native';
+import { StyleSheet, Animated, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const LandingScreen = () => {
@@ -9,11 +9,11 @@ const LandingScreen = () => {
   useEffect(() => {
     // Start the fade-out animation
     Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 8000, // 2 seconds
+      toValue: 0.0,
+      duration: 4000, // 4 seconds
       useNativeDriver: true,
     }).start(() => {
-      // Navigate to Onboarding page after the animation completes
+      // Navigate to Instructions page after the animation completes
       navigation.navigate('Instructions');
     });
   }, [fadeAnim, navigation]);
@@ -21,7 +21,7 @@ const LandingScreen = () => {
   return (
     <Animated.View style={{ ...styles.container, opacity: fadeAnim }}>
       <ImageBackground source={require('../public/assets/LandingScreen.png')} style={styles.landingPage}>
-
+        {/* Any additional content for the LandingScreen */}
       </ImageBackground>
     </Animated.View>
   );

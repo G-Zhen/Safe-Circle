@@ -1,54 +1,113 @@
-import React from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { StyleSheet, Text, View, Pressable, Animated, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export default function AllowNotifications() {
   const navigation = useNavigation();
+  const fadeAnim = useRef(new Animated.Value(0.05)).current; // Initial value for opacity: 0
+
+  useEffect(() => {
+    // Start the fade-in animation
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500, // 0.5 seconds
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
+
+  const requestNotificationPermission = async () => {
+    if ("Notification" in window && "serviceWorker" in navigator) {
+      try {
+        const permission = await Notification.requestPermission();
+        console.log(`Notification permission status: ${permission}`);
+        if (permission === "granted") {
+          navigator.serviceWorker.ready.then(registration => {
+            registration.showNotification("Notifications enabled!");
+            navigation.navigate('AllowLocationShare');
+          }).catch(error => {
+            console.error("Service worker not ready", error);
+            navigation.navigate('AllowLocationShare');
+          });
+        } else {
+          console.log("Notifications permission denied");
+          navigation.navigate('AllowLocationShare');
+        }
+      } catch (error) {
+        console.error("Error requesting notification permission:", error);
+        navigation.navigate('AllowLocationShare');
+      }
+    } else {
+      console.log("Notifications API not supported in this browser.");
+      navigation.navigate('AllowLocationShare');
+    }
+  };
+
+  const handleSkip = () => {
+    navigation.navigate('AllowLocationShare');
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>AllowNotifications</Text>
-      <View style={styles.infoBox}>
-        <Text style={styles.infoText}>Your informational content goes here...</Text>
-      </View>
-      <Pressable onPress={() => navigation.navigate('Login')} style={styles.button}>
-        <Text style={styles.buttonText}>Next</Text>
-      </Pressable>
-    </View>
+    <Animated.View style={{ ...styles.container, opacity: fadeAnim }}>
+      <ImageBackground
+        source={require('../../public/assets/NotificationsAllow.png')} // replace with your image path
+        style={styles.background}
+      >
+        <View style={styles.buttonContainer}>
+          <Pressable onPress={requestNotificationPermission} style={styles.button}>
+            <Text style={styles.buttonText}>Turn on Notifications</Text>
+          </Pressable>
+          <Pressable onPress={handleSkip} style={styles.skipButton}>
+            <Text style={styles.skipButtonText}>Skip</Text>
+          </Pressable>
+        </View>
+      </ImageBackground>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000', // Adjust as needed
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  infoBox: {
-    width: '80%',
-    padding: 20,
-    backgroundColor: '#ccc', // Adjust as needed
-    borderRadius: 10,
-    marginVertical: 20,
-  },
-  infoText: {
-    fontSize: 16,
-    color: '#000',
+  buttonContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginBottom: 180, // Adjust this value to control the distance from the bottom
   },
   button: {
-    backgroundColor: '#4285F4',
+    backgroundColor: '#F6F7B0',
     padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
+    borderRadius: 20,
+    width: 370,
+    marginBottom: 10, // Add some space between the buttons
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 16,
+    color: 'black',
+    fontSize: 20,
+    textAlign: 'center',
+    fontWeight: 'semibold',
+  },
+  skipButton: {
+    marginTop: 10, // Add some space between the buttons
+    backgroundColor: '#E7E1FA', // Different background color for skip button
+    padding: 10,
+    borderRadius: 20,
+    width: 370,
+  },
+  skipButtonText: {
+    color: 'black',
+    fontSize: 20,
+    textAlign: 'center',
+    fontWeight: 'semibold',
   },
 });

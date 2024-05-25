@@ -16,6 +16,7 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Landing">
+        
         <Stack.Screen name="Landing" component={LandingScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Instructions" component={Instructions} options={{ headerShown: false }} />
         <Stack.Screen name="KeyFeatures" component={KeyFeatures} options={{ headerShown: false }} />
@@ -25,6 +26,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
       </Stack.Navigator>
+      
     </NavigationContainer>
   );
 }

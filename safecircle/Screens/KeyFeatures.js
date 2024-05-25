@@ -1,54 +1,64 @@
-import React from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { StyleSheet, Text, View, Pressable, Animated, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export default function KeyFeatures() {
   const navigation = useNavigation();
+  const fadeAnim = useRef(new Animated.Value(0.05)).current; // Initial value for opacity: 0
 
+  useEffect(() => {
+    // Start the fade-in animation
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500, // 2 seconds
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>KeyFeatures</Text>
-      <View style={styles.infoBox}>
-        <Text style={styles.infoText}>Your informational content goes here...</Text>
-      </View>
-      <Pressable onPress={() => navigation.navigate('Login')} style={styles.button}>
-        <Text style={styles.buttonText}>Next</Text>
-      </Pressable>
-    </View>
+    <Animated.View style={{ ...styles.container, opacity: fadeAnim }}>
+      <ImageBackground
+        source={require('../public/assets/KeyFeatures.png')} // replace with your image path
+        style={styles.background}
+      >
+        <View style={styles.buttonContainer}>
+        <Pressable onPress={() => navigation.navigate('AllowNotifications')} style={styles.button}>
+            <Text style={styles.buttonText}>Next</Text>
+          </Pressable>
+        </View>
+      </ImageBackground>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000', // Adjust as needed
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  infoBox: {
-    width: '80%',
-    padding: 20,
-    backgroundColor: '#ccc', // Adjust as needed
-    borderRadius: 10,
-    marginVertical: 20,
-  },
-  infoText: {
-    fontSize: 16,
-    color: '#000',
+  buttonContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginBottom: 180, // Adjust this value to control the distance from the bottom
   },
   button: {
-    backgroundColor: '#4285F4',
+    backgroundColor: '#F6F7B0',
     padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
+    borderRadius: 20,
+    width: 370,
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 16,
+    color: 'black',
+    fontSize: 20,
+    textAlign: 'center',
+    fontWeight: 'semibold',
   },
 });
