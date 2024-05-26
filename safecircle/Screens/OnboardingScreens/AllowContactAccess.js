@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, Pressable, ImageBackground, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as Contacts from 'expo-contacts';
+import { addContact } from '../../Backend/firebase/addContact';
+import { auth } from '../../Backend/firebase/firebaseConfig';
 
 export default function AllowContactAccess() {
   const navigation = useNavigation();
@@ -11,13 +13,39 @@ export default function AllowContactAccess() {
     const { status } = await Contacts.requestPermissionsAsync();
     if (status === 'granted') {
       const { data } = await Contacts.getContactsAsync({
-        fields: [Contacts.Fields.Emails],
+        fields: [Contacts.Fields.Emails, Contacts.Fields.Name],
       });
 
       if (data.length > 0) {
         console.log('Contacts permission granted');
-        console.log(data);
         Alert.alert('Contacts permission granted');
+
+        const user = auth.currentUser;
+        if (user) {
+          const userId = user.uid;
+          const userEmail = user.email;
+
+          console.log('User UID and email :', [userId, userEmail]);
+          console.log('Contacts array:', data);
+          //start
+          const formattedContacts = data.map(contact => ({
+            name: contact.name,
+            contactID: contact.id,
+            firebase_UID: userId,
+            user: userEmail,
+          }));
+
+          try {
+            await addContact(formattedContacts);
+            navigation.navigate('Contacts'); // Navigate to ContactPage on success
+          } catch (error) {
+            console.error('Error adding contacts: ', error);
+            //Alert.alert('Error adding contacts: ', error.message);
+          }
+        } else {
+          console.error('No user is signed in.');
+        }
+        //end
       } else {
         console.log('No contacts found');
         Alert.alert('No contacts found');
@@ -26,17 +54,16 @@ export default function AllowContactAccess() {
       console.log('Contacts permission denied');
       Alert.alert('Contacts permission denied');
     }
-    navigation.navigate('Home');
   };
 
   const handleSkip = () => {
-    navigation.navigate('Home');
+    navigation.navigate('Contacts'); // Ensure you navigate to the ContactPage
   };
 
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require('../../public/assets/AllowContact.png')} // replace with your image path
+        source={require('../../public/assets/AllowContact.png')}
         style={styles.background}
         onLoad={() => setIsImageLoaded(true)}
       >
