@@ -60,6 +60,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 20,
     width: 370,
+    borderWidth:3,
+
   },
   buttonText: {
     color: 'black',
@@ -68,4 +70,3 @@ const styles = StyleSheet.create({
     fontWeight: 'semibold',
   },
 });
-
