@@ -129,7 +129,7 @@
 
 (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-+  [GMSServices provideAPIKey:@"AIzaSyCV2lwVnGqfVudXiwNOf-mSjhEkCcU_4AY"]; // add this line using the api key obtained from Google Console
++  [GMSServices provideAPIKey:@"EMPTY_INSERT_API_KEY"]; // add this line using the api key obtained from Google Console
 }
 
 @end
