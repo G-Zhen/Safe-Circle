@@ -31,7 +31,6 @@ class LocationTracking extends Component {
       destinationName: '',
       safetyRating: '',
       slideAnimation: new Animated.Value(-200),
-      showStartButton: false,
     };
   }
 
@@ -84,6 +83,7 @@ class LocationTracking extends Component {
             latitude,
             longitude,
             routeCoordinates: routeCoordinates.concat([newCoordinate]),
+            distanceTravelled: distanceTravelled + this.calcDistance(newCoordinate),
             prevLatLng: newCoordinate,
           });
 
@@ -97,6 +97,10 @@ class LocationTracking extends Component {
     }
   };
 
+  calcDistance = (newLatLng) => {
+    const { prevLatLng } = this.state;
+    return haversine(prevLatLng, newLatLng) || 0;
+  };
 
   getMapRegion = () => ({
     latitude: this.state.latitude,
@@ -113,7 +117,7 @@ class LocationTracking extends Component {
     const mode = 'walking'; // or 'driving', 'bicycling', 'transit'
 
     try {
-      const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${latitude},${longitude}&destination=${lat},${lng}&mode=${mode}&key=${process.env.EXPO_PUBLIC_GOOGLE_API_KEY}`;
+      const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${latitude},${longitude}&destination=${lat},${lng}&mode=${mode}&key=`;
 
       const response = await fetch(url);
       const data = await response.json();
@@ -192,7 +196,6 @@ class LocationTracking extends Component {
       this.setState({
         destination: { lat, lng },
         destinationName: locationName,
-        showStartButton: true,
       }, () => {
         this.getRouteDirections();
         this.fetchSafetyRating(locationName);
@@ -211,13 +214,8 @@ class LocationTracking extends Component {
     }).start();
   };
 
-  handleStartPress = () => {
-    Alert.alert('Start button pressed');
-    // Additional logic to handle the start of tracking or other actions can be added here.
-  };
-
   render() {
-    const { distanceTravelled, destinationName, safetyRating, showStartButton } = this.state;
+    const { distanceTravelled, destinationName, safetyRating } = this.state;
 
     return (
       <View style={styles.container}>
@@ -226,7 +224,7 @@ class LocationTracking extends Component {
           onPress={this.onPlaceSelected}
           fetchDetails={true}
           query={{
-            key: process.env.EXPO_PUBLIC_GOOGLE_API_KEY,
+            key: '',
             language: 'en',
           }}
           styles={{
@@ -285,20 +283,17 @@ class LocationTracking extends Component {
         </MapView>
         <View style={styles.infoContainer}>
           <View style={styles.buttonContainer}>
-
+            <TouchableOpacity style={[styles.bubble, styles.button]}>
+              <Text style={styles.bottomBarContent}>
+                {parseFloat(distanceTravelled).toFixed(2)} km
+              </Text>
+            </TouchableOpacity>
           </View>
           <Animated.View style={[styles.slideCard, { transform: [{ translateY: this.state.slideAnimation }] }]}>
             <Text style={styles.locationName}>{destinationName}</Text>
             <Text style={styles.distance}>Distance: {parseFloat(distanceTravelled).toFixed(2)} km</Text>
             <Text style={styles.safetyRating}>Safety Rating: {safetyRating}</Text>
           </Animated.View>
-          {showStartButton && (
-            <View style={styles.startButtonContainer}>
-              <TouchableOpacity style={styles.startButton} onPress={this.handleStartPress}>
-                <Text style={styles.startButtonText}>Start</Text>
-              </TouchableOpacity>
-            </View>
-          )}
           <TabBar />
         </View>
       </View>
@@ -360,21 +355,6 @@ const styles = StyleSheet.create({
   },
   safetyRating: {
     fontSize: 16,
-  },
-  startButtonContainer: {
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  startButton: {
-    backgroundColor: '#1faadb',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    bottom:90,
-  },
-  startButtonText: {
-    fontSize: 16,
-    color: 'white',
   },
 });
 
