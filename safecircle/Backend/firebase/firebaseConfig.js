@@ -19,6 +19,8 @@ if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.proj
 }
 
 const app = initializeApp(firebaseConfig);
+
+// Initialize Firebase Authentication
 const auth = getAuth(app);
 // Initialize Cloud Firestore and get a reference to the service
 const firestore = getFirestore(app);

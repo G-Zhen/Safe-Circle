@@ -30,6 +30,9 @@ target 'safecircle' do
     :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] == 'true',
   )
 
+  rn_maps_path = '../node_modules/react-native-maps'
+  od 'react-native-google-maps', :path => rn_maps_path
+  
   # Add modular headers for GoogleUtilities
   pod 'GoogleUtilities', :modular_headers => true
   pod 'Firebase/Core'

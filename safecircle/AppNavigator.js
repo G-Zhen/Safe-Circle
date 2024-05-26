@@ -16,6 +16,7 @@ import ProfileScreen from './screens/ProfileScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import TabBar from './screens/TabBar';
 import { StatusProvider } from './screens/StatusContext';
+import LocationTracking from './src/LocationTracking';
 
 
 // contacts, locations - grace testing
@@ -45,6 +46,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Resources" component={ResourcesScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="LocationTracking" component={LocationTracking} options={{ headerShown: false }}/>
 
         {/* <Stack.Screen name="Map" component={MapScreen} /> */}
       </Stack.Navigator>

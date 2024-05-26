@@ -8,34 +8,45 @@ export default function AllowNotifications() {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const requestNotificationPermission = async () => {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
+    try {
+      // Check existing notification permissions
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
 
-    if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
+      // Request permissions if not already granted
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
 
-    if (finalStatus !== 'granted') {
-      Alert.alert('Failed to get push token for push notification!');
+      // If permissions are not granted, show an alert and navigate to the next screen
+      if (finalStatus !== 'granted') {
+        Alert.alert('Failed to get push token for push notification!');
+        navigation.navigate('AllowLocationShare');
+        return;
+      }
+
+      // Get the Expo push token (with a deprecation warning if projectId is not specified)
+      const token = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log('Expo push token:', token);
+
+      // Configure notification channel for Android
+      if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('default', {
+          name: 'default',
+          importance: Notifications.AndroidImportance.MAX,
+          vibrationPattern: [0, 250, 250, 250],
+          lightColor: '#FF231F7C',
+        });
+      }
+
+      // Show success alert and navigate to the next screen
+      Alert.alert('Notification permissions granted');
       navigation.navigate('AllowLocationShare');
-      return;
+    } catch (error) {
+      console.error('Error requesting notification permission:', error);
+      Alert.alert('An error occurred while requesting notification permissions.');
     }
-
-    const token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
-
-    if (Platform.OS === 'android') {
-      Notifications.setNotificationChannelAsync('default', {
-        name: 'default',
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
-      });
-    }
-
-    Alert.alert('Notification permissions granted');
-    navigation.navigate('AllowLocationShare');
   };
 
   const handleSkip = () => {
@@ -100,6 +111,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     width: 370,
     marginBottom: 10, // Add some space between the buttons
+    borderWidth: 3,
+
   },
   buttonText: {
     color: 'black',
@@ -113,12 +126,14 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 20,
     width: 370,
+    borderWidth: 3,
+
   },
   skipButtonText: {
     color: 'black',
     fontSize: 20,
     textAlign: 'center',
     fontWeight: 'semibold',
+    
   },
 });
-
