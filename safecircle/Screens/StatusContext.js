@@ -8,7 +8,7 @@ export const StatusProvider = ({ children }) => {
 
     const toggleStatus = () => {
         if (status === 'Safe') {
-            setStatus('Danger');
+            setStatus('Feelng Unsafe');
             setStatusColor('#F2B7B7');
         } else {
             setStatus('Safe');
