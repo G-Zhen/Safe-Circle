@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Dimensions, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getCurrentUser } from '../Backend/firebase/firebaseConfig';
+import Header from './Header';
+import TabBar from './TabBar';
 
 const { width, height } = Dimensions.get('window');
 
@@ -68,16 +70,12 @@ const ProfileScreen = () => {
       style={styles.background}
     >
       <View style={styles.container}>
-        <View style={styles.header}>
-          <View style={styles.statusWrapper}>
-            <View style={styles.statusContainer}>
-              <Text style={styles.statusText}>Your Status: Safe</Text>
-            </View>
-          </View>
-        </View>
+          <Header title="My Profile" />
+        
         <TextInput
           style={styles.input}
           placeholder="Name"
+          placeholderTextColor="grey"
           value={profileInfo.name}
           editable={isEditable}
           onChangeText={(text) => handleChange('name', text)}
@@ -85,6 +83,7 @@ const ProfileScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Phone number"
+          placeholderTextColor="grey"
           value={profileInfo.phone}
           editable={isEditable}
           onChangeText={(text) => handleChange('phone', text)}
@@ -92,12 +91,14 @@ const ProfileScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Email"
+          placeholderTextColor="black"
           value={profileInfo.email}
           editable={false} // Email is fetched from login information
         />
         <TextInput
           style={styles.input}
           placeholder="Address"
+          placeholderTextColor="grey"
           value={profileInfo.address}
           editable={isEditable}
           onChangeText={(text) => handleChange('address', text)}
@@ -109,6 +110,7 @@ const ProfileScreen = () => {
           <Text style={styles.editButtonText}>{isEditable ? 'Save' : 'Edit'}</Text>
         </TouchableOpacity>
       </View>
+      <TabBar />
     </ImageBackground>
   );
 };
@@ -126,26 +128,20 @@ const styles = StyleSheet.create({
     flex: 1,
     width: width * 0.9,
     padding: 20,
-    justifyContent: 'center',
+    paddingTop: 150,
     alignItems: 'center',
   },
-  header: {
-    width: '100%',
-    marginBottom: 20,
-  },
-  statusWrapper: {
-    width: '100%',
-    alignItems: 'flex-end',
-  },
-  statusContainer: {
-    backgroundColor: '#B9E0D3',
+  profileContainer: {
+    alignItems: 'center',
+    backgroundColor: '#F6F7B0',
     borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    padding: 10,
+    marginBottom: 20,
+    width: '90%',
   },
-  statusText: {
-    fontSize: 16,
-    color: 'black',
+  name: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
   input: {
     backgroundColor: '#FFFFFF',
@@ -154,18 +150,19 @@ const styles = StyleSheet.create({
     marginVertical: 18,
     width: '90%',
     height: 39,
+    color: 'black', // Change text color to black
   },
   editButton: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#F6F7B0',
     borderRadius: 10,
     padding: 10,
     alignItems: 'center',
     marginVertical: 10,
     alignSelf: 'flex-end',
-    width: '40%',
+    width: '40%', 
   },
   saveButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#92BDA6',
   },
   editButtonText: {
     fontSize: 16,
