@@ -106,6 +106,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     width: 370,
     marginBottom: 10,
+    borderWidth: 3,
+
   },
   buttonText: {
     color: 'black',
@@ -119,6 +121,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 20,
     width: 370,
+    borderWidth: 3,
+
   },
   skipButtonText: {
     color: 'black',
