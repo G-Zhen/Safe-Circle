@@ -1,35 +1,41 @@
-import React, { useRef, useEffect } from 'react';
-import { StyleSheet, Text, View, Pressable, Animated, ImageBackground } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Pressable, ImageBackground, Alert, ActivityIndicator, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import * as Notifications from 'expo-notifications';
 
 export default function AllowNotifications() {
   const navigation = useNavigation();
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const requestNotificationPermission = async () => {
-    if ("Notification" in window && "serviceWorker" in navigator) {
-      try {
-        const permission = await Notification.requestPermission();
-        console.log(`Notification permission status: ${permission}`);
-        if (permission === "granted") {
-          navigator.serviceWorker.ready.then(registration => {
-            registration.showNotification("Notifications enabled!");
-            navigation.navigate('AllowLocationShare');
-          }).catch(error => {
-            console.error("Service worker not ready", error);
-            navigation.navigate('AllowLocationShare');
-          });
-        } else {
-          console.log("Notifications permission denied");
-          navigation.navigate('AllowLocationShare');
-        }
-      } catch (error) {
-        console.error("Error requesting notification permission:", error);
-        navigation.navigate('AllowLocationShare');
-      }
-    } else {
-      console.log("Notifications API not supported in this browser.");
-      navigation.navigate('AllowLocationShare');
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
     }
+
+    if (finalStatus !== 'granted') {
+      Alert.alert('Failed to get push token for push notification!');
+      navigation.navigate('AllowLocationShare');
+      return;
+    }
+
+    const token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log(token);
+
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+
+    Alert.alert('Notification permissions granted');
+    navigation.navigate('AllowLocationShare');
   };
 
   const handleSkip = () => {
@@ -37,23 +43,38 @@ export default function AllowNotifications() {
   };
 
   return (
+    <View style={styles.container}>
       <ImageBackground
         source={require('../../public/assets/NotificationsAllow.png')} // replace with your image path
         style={styles.background}
+        onLoad={() => setIsImageLoaded(true)}
       >
-        <View style={styles.buttonContainer}>
-          <Pressable onPress={requestNotificationPermission} style={styles.button}>
-            <Text style={styles.buttonText}>Turn on Notifications</Text>
-          </Pressable>
-          <Pressable onPress={handleSkip} style={styles.skipButton}>
-            <Text style={styles.skipButtonText}>Skip</Text>
-          </Pressable>
-        </View>
+        {!isImageLoaded && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        )}
+        {isImageLoaded && (
+          <View style={styles.buttonContainer}>
+            <Pressable onPress={requestNotificationPermission} style={styles.button}>
+              <Text style={styles.buttonText}>Turn on Notifications</Text>
+            </Pressable>
+            <Pressable onPress={handleSkip} style={styles.skipButton}>
+              <Text style={styles.skipButtonText}>Skip</Text>
+            </Pressable>
+          </View>
+        )}
       </ImageBackground>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   background: {
     flex: 1,
     width: '100%',
@@ -61,16 +82,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  loadingContainer: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -50 }, { translateY: -50 }],
   },
   buttonContainer: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
-    marginBottom: 180, // Adjust this value to control the distance from the bottom
+    marginBottom: 160, // Adjust this value to control the distance from the bottom
   },
   button: {
     backgroundColor: '#F6F7B0',

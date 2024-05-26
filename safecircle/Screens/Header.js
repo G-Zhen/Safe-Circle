@@ -19,7 +19,7 @@ const Header = ({ title }) => {
 
 const styles = StyleSheet.create({
     headerContainer: {
-        marginTop: 15,
+        marginTop: 80,
         padding: 15,
         paddingRight: 30,
     },
