@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Pressable, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable, ActivityIndicator, Image, ImageBackground, Dimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { auth } from '../Backend/firebase/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -7,7 +7,9 @@ import signInWithGoogle from '../Backend/firebase/GoogleSignIn';
 import { signUpWithEmail, loginWithEmail } from '../Backend/firebase/EmailPasswordSignIn';
 import { useNavigation } from '@react-navigation/native';
 
-const LoginScreen = () => {
+const { width } = Dimensions.get('window');
+
+export default function LoginScreen() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState('');
@@ -19,7 +21,7 @@ const LoginScreen = () => {
       setUser(user);
       setLoading(false);
       if (user) {
-        navigation.navigate('Home');
+        navigation.navigate('AllowNotifications');
       }
     });
 
@@ -41,7 +43,7 @@ const LoginScreen = () => {
     setLoading(true);
     try {
       await signUpWithEmail(email, password);
-      navigation.navigate('Onboarding');
+      navigation.navigate('AllowNotifications');
     } catch (error) {
       console.error('Email sign-up error: ', error);
     } finally {
@@ -71,65 +73,133 @@ const LoginScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <Text>Login with</Text>
+    <ImageBackground source={require('../public/assets/DefaultBackground.png')} style={styles.backgroundImage}>
+      <View style={styles.container}>
+        <View style={styles.card}>
+          <Text style={styles.title}>Sign In</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <Pressable onPress={handleEmailLogin} style={styles.button}>
-        <Text style={styles.buttonText}>Login with Email</Text>
-      </Pressable>
-      <Pressable onPress={handleEmailSignUp} style={styles.button}>
-        <Text style={styles.buttonText}>Sign Up with Email</Text>
-      </Pressable>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            placeholderTextColor="#000"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            placeholderTextColor="#000"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
+           <Pressable onPress={handleEmailLogin} style={styles.button}>
+            <Text style={styles.buttonText}>Login with Email</Text>
+          </Pressable>
+          <Pressable onPress={handleEmailSignUp} style={styles.button}>
+            <Text style={styles.buttonText}>Sign Up with Email</Text>
+          </Pressable>
 
-      <Text>or</Text>
+          <Text style={styles.orText}>or</Text>
 
-      <Pressable onPress={handleGoogleSignIn} style={styles.button}>
-        <Text style={styles.buttonText}>Google</Text>
-      </Pressable>
-
-      <StatusBar style="auto" />
-    </View>
+          <Pressable onPress={handleGoogleSignIn} style={styles.googleButton}>
+            <Image source={require('../public/assets/Google icons 64.png')} style={styles.googleIcon} />
+            <Text style={styles.googleButtonText}>Sign Up with Google</Text>
+          </Pressable>
+        </View>
+        <StatusBar style="auto" />
+      </View>
+    </ImageBackground>
   );
-};
+}
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+    width: '100%',  // Ensure the image covers the full width
+    height: '100%', // Ensure the image covers the full height
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  logo: {
+    width: 150,
+    height: 150,
+    marginBottom: 20,
+  },
+  card: {
+    width: 345,
+    height: 480,
+    backgroundColor: '#A3A8CE', // pastel purple color
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    borderWidth: 3,
+
+  },
+  title: {
+    fontSize: 30,
+    color: '#17156F',
+    marginBottom: 30,
+    fontWeight: 'bold', // Bold text
+    fontStyle: 'italic', // Italicized text
+  },
+  input: {
+    width: 288,
+    height: 39,
+    padding: 10,
+    marginVertical: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
     backgroundColor: '#fff',
+    fontSize: 18,
+  },
+  button: {
+    backgroundColor: '#F6F7B0',
+    padding: 10,
+    borderRadius: 10,
+    margin: 10,
+    width: 288,
+    height: 39,
+    alignItems: 'center',
+    justifyContent: 'center', // Ensure the text is centered
+  },
+  buttonText: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: '600', // Use '600' instead of 'semibold' for bold text
+  },
+  googleButton: {
+    flexDirection: 'row', // Arrange children in a row
+    backgroundColor: '#F6F7B0',
+    padding: 10,
+    borderRadius: 10,
+    margin: 10,
+    width: 288,
+    height: 39,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  input: {
-    width: '80%',
-    padding: 10,
-    margin: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
+  googleIcon: {
+    width: 16,
+    height: 16,
+    marginRight: 10, // Space between the icon and text
   },
-  button: {
-    backgroundColor: '#4285F4',
-    padding: 10,
-    borderRadius: 5,
-    margin: 10,
-  },
-  buttonText: {
-    color: '#fff',
+  googleButtonText: {
+    color: '#000',
     fontSize: 16,
+    fontWeight: '600', // Use '600' instead of 'semibold' for bold text
+  },
+  orText: {
+    color: '#17156F',
+    marginVertical: 10,
+    fontSize: 20,
   },
 });
-
-export default LoginScreen;

@@ -1,46 +1,47 @@
-import React from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, ImageBackground, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function LandingScreen() {
+const LandingScreen = () => {
   const navigation = useNavigation();
+
+  useEffect(() => {
+    // Delay the navigation to the Instructions page by 2 seconds
+    const timeout = setTimeout(() => {
+      navigation.navigate('Instructions');
+    }, 2000); // 2 seconds delay
+
+    return () => clearTimeout(timeout); // Clear the timeout if the component unmounts
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>SAFE CIRCLE</Text>
-      <Text style={styles.subtitle}>Protection in every phase</Text>
-      <Pressable onPress={() => navigation.navigate('Onboarding')} style={styles.button}>
-        <Text style={styles.buttonText}>Next</Text>
-      </Pressable>
+      <ImageBackground source={require('../public/assets/LandingScreen.png')} style={styles.landingPage}>
+        {/* Any additional content for the LandingScreen */}
+      </ImageBackground>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  landingPage: {
+    height: '100%',
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000', // Adjust as needed
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#fff',
-    marginVertical: 20,
-  },
-  button: {
-    backgroundColor: '#4285F4',
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     padding: 10,
     borderRadius: 5,
-    marginTop: 20,
   },
-  buttonText: {
+  text: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 24,
   },
 });
+
+export default LandingScreen;

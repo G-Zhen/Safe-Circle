@@ -2,12 +2,12 @@ import React from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function OnboardingScreen() {
+export default function CreateAccount() {
   const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Instructions</Text>
+      <Text style={styles.title}>CreateAccount</Text>
       <View style={styles.infoBox}>
         <Text style={styles.infoText}>Your informational content goes here...</Text>
       </View>
