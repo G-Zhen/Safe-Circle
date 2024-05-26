@@ -113,7 +113,7 @@ class LocationTracking extends Component {
     const mode = 'walking'; // or 'driving', 'bicycling', 'transit'
 
     try {
-      const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${latitude},${longitude}&destination=${lat},${lng}&mode=${mode}&key=AIzaSyCV2lwVnGqfVudXiwNOf-mSjhEkCcU_4AY`;
+      const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${latitude},${longitude}&destination=${lat},${lng}&mode=${mode}&key=${process.env.EXPO_PUBLIC_GOOGLE_API_KEY}`;
 
       const response = await fetch(url);
       const data = await response.json();
@@ -226,7 +226,7 @@ class LocationTracking extends Component {
           onPress={this.onPlaceSelected}
           fetchDetails={true}
           query={{
-            key: 'AIzaSyCV2lwVnGqfVudXiwNOf-mSjhEkCcU_4AY',
+            key: process.env.EXPO_PUBLIC_GOOGLE_API_KEY,
             language: 'en',
           }}
           styles={{
