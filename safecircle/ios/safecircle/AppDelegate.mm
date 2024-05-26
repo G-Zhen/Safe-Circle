@@ -60,13 +60,13 @@
 //}
 //
 //@end
+
 #import "AppDelegate.h"
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
 #import <Firebase.h>
 #import <GoogleMaps/GoogleMaps.h>
-
 
 @implementation AppDelegate
 
@@ -80,6 +80,14 @@
 
   // Initialize Firebase
   [FIRApp configure];
+
+  // Read the API key from the info.plist
+  NSString *apiKey = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"GMSApiKey"];
+  if (apiKey && apiKey.length > 0) {
+      [GMSServices provideAPIKey:apiKey];
+  } else {
+      NSLog(@"Google Maps API key is missing. Please add it to your info.plist.");
+  }
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
@@ -127,9 +135,5 @@
   return [super application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 }
 
-(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-+  [GMSServices provideAPIKey:@"AIzaSyCV2lwVnGqfVudXiwNOf-mSjhEkCcU_4AY"]; // add this line using the api key obtained from Google Console
-}
-
 @end
+
