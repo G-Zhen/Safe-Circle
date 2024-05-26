@@ -1,25 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, FlatList, Dimensions, ImageBackground, Share, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Fuse from 'fuse.js';
 import TabBar from '../TabBar';
 import Header from '../Header';
-
+import { getContacts } from '../../Backend/firebase/addContact';
+// good works but slow
 const { width, height } = Dimensions.get('window');
 
 const ContactPage = () => {
-  const initialContacts = [
-    { id: '1', name: 'Anna', phone: '(123) 456 7891' },
-    { id: '2', name: 'Grace', phone: '(123) 456 7891' },
-    { id: '3', name: 'Hannah', phone: '(123) 456 7891' },
-    { id: '4', name: 'Jamie', phone: '(123) 456 7891' },
-  ];
-
   const navigation = useNavigation();
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredContacts, setFilteredContacts] = useState(initialContacts);
-  const [contacts, setContacts] = useState(initialContacts);
+  const [filteredContacts, setFilteredContacts] = useState([]);
+  const [contacts, setContacts] = useState([]);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+
+  useEffect(() => {
+    fetchContacts();
+  }, []);
+
+  const fetchContacts = async () => {
+    const userContacts = await getContacts();
+    setContacts(userContacts);
+    setFilteredContacts(userContacts);
+  };
 
   const fuse = new Fuse(contacts, {
     keys: ['name', 'phone'],
@@ -60,7 +64,7 @@ const ContactPage = () => {
           text: 'Delete',
           style: 'destructive',
           onPress: () => {
-            const updatedContacts = contacts.filter(contact => contact.id !== contactId);
+            const updatedContacts = contacts.filter(contact => contact.contactID !== contactId);
             setContacts(updatedContacts);
             setFilteredContacts(updatedContacts);
           },
@@ -84,7 +88,7 @@ const ContactPage = () => {
           <TouchableOpacity style={styles.actionButtonShare} onPress={() => handleShare(item)}>
             <Image style={styles.actionIcon} source={require('../../public/assets/ShareIcon.png')} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButtonDelete} onPress={() => handleDelete(item.id)}>
+          <TouchableOpacity style={styles.actionButtonDelete} onPress={() => handleDelete(item.contactID)}>
             <Image style={styles.actionIcon} source={require('../../public/assets/DeleteIcon.png')} />
           </TouchableOpacity>
         </View>
@@ -111,7 +115,7 @@ const ContactPage = () => {
             <Text style={styles.pinnedTitle}>Pinned:</Text>
             <View style={styles.pinnedContacts}>
               {contacts.slice(0, 4).map(contact => (
-                <View key={contact.id} style={styles.pinnedContact}>
+                <View key={contact.contactID} style={styles.pinnedContact}>
                   <Image style={styles.pinnedImage} source={require('../../public/assets/ProfileIcon.png')} />
                   <Text style={styles.pinnedName}>{contact.name}</Text>
                 </View>
@@ -131,7 +135,7 @@ const ContactPage = () => {
             <FlatList
               data={filteredContacts}
               renderItem={renderItem}
-              keyExtractor={item => item.id}
+              keyExtractor={item => item.contactID}
               contentContainerStyle={styles.contactList}
             />
             <TabBar />
@@ -155,7 +159,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 15,
     paddingBottom: 100,
-    paddingTop: 20, // Add padding to the top
+    paddingTop: 20,
   },
   loadingContainer: {
     position: 'absolute',
