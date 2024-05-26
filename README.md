@@ -2,6 +2,7 @@
 Imagine having a personal safety companion in your pocket, always ready to help at a moment’s notice. Our cutting-edge safety app allows you to send your live location and safety status instantly, ensuring your loved ones know where you are and how you’re doing. In an emergency, you can send quick, pre-set texts with just a tap, saving precious time when it matters most. Whether you're walking home late at night or traveling in an unfamiliar area, our app provides peace of mind and enhances your safety with real-time connectivity. Stay safe, stay connected, with our safety app.
 
 * Venus Hacks May 24-26, 2024
+* [Devpost submission](https://devpost.com/software/664933/joins/cxVlwAMwU6kWYfk6BNqC2A)
 * Members
     * Grace Zhen @G-Zhen
     * Jamie Phan @phanjamie
