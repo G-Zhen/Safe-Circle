@@ -26,11 +26,11 @@ export default function AllowContactAccess() {
       console.log('Contacts permission denied');
       Alert.alert('Contacts permission denied');
     }
-    navigation.navigate('LoginScreen');
+    navigation.navigate('Home');
   };
 
   const handleSkip = () => {
-    navigation.navigate('LoginScreen');
+    navigation.navigate('Home');
   };
 
   return (

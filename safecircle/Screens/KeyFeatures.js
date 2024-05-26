@@ -20,7 +20,7 @@ export default function Instructions() {
         )}
         {isImageLoaded && (
           <View style={styles.buttonContainer}>
-            <Pressable onPress={() => navigation.navigate('AllowNotifications')} style={styles.button}>
+            <Pressable onPress={() => navigation.navigate('LoginScreen')} style={styles.button}>
               <Text style={styles.buttonText}>Next</Text>
             </Pressable>
           </View>
