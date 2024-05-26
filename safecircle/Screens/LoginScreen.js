@@ -43,7 +43,7 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await signUpWithEmail(email, password);
-      navigation.navigate('Onboarding');
+      navigation.navigate('AllowNotifications');
     } catch (error) {
       console.error('Email sign-up error: ', error);
     } finally {
