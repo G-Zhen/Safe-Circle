@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, FlatList, Dimensions, ImageBackground, Share, Alert } from 'react-native';
+import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, FlatList, Dimensions, ImageBackground, Share, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Fuse from 'fuse.js';
 import TabBar from '../TabBar';
@@ -19,6 +19,7 @@ const ContactPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredContacts, setFilteredContacts] = useState(initialContacts);
   const [contacts, setContacts] = useState(initialContacts);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const fuse = new Fuse(contacts, {
     keys: ['name', 'phone'],
@@ -92,43 +93,52 @@ const ContactPage = () => {
   );
 
   return (
-    <ImageBackground
-      source={require('../../public/assets/plain-background.png')}
-      style={styles.background}
-      resizeMode="cover"
-    >
-      <Header title="Emergency Contacts" />
-
-      <View style={styles.container}>
-        <Text style={styles.pinnedTitle}>Pinned:</Text>
-        <View style={styles.pinnedContacts}>
-          {contacts.slice(0, 4).map(contact => (
-            <View key={contact.id} style={styles.pinnedContact}>
-              <Image style={styles.pinnedImage} source={require('../../public/assets/ProfileIcon.png')} />
-              <Text style={styles.pinnedName}>{contact.name}</Text>
+    <View style={styles.container}>
+      <ImageBackground
+        source={require('../../public/assets/plain-background.png')}
+        style={styles.background}
+        resizeMode="cover"
+        onLoad={() => setIsImageLoaded(true)}
+      >
+        {!isImageLoaded && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        )}
+        {isImageLoaded && (
+          <View style={styles.innerContainer}>
+            <Header title="Emergency Contacts" />
+            <Text style={styles.pinnedTitle}>Pinned:</Text>
+            <View style={styles.pinnedContacts}>
+              {contacts.slice(0, 4).map(contact => (
+                <View key={contact.id} style={styles.pinnedContact}>
+                  <Image style={styles.pinnedImage} source={require('../../public/assets/ProfileIcon.png')} />
+                  <Text style={styles.pinnedName}>{contact.name}</Text>
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search"
-            value={searchTerm}
-            onChangeText={handleSearch}
-          />
-          <TouchableOpacity style={styles.addButton}>
-            <Text style={styles.addButtonText}>+</Text>
-          </TouchableOpacity>
-        </View>
-        <FlatList
-          data={filteredContacts}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-          contentContainerStyle={styles.contactList}
-        />
-        <TabBar />
-      </View>
-    </ImageBackground>
+            <View style={styles.searchContainer}>
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Search"
+                value={searchTerm}
+                onChangeText={handleSearch}
+              />
+              <TouchableOpacity style={styles.addButton}>
+                <Text style={styles.addButtonText}>+</Text>
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              data={filteredContacts}
+              renderItem={renderItem}
+              keyExtractor={item => item.id}
+              contentContainerStyle={styles.contactList}
+            />
+            <TabBar />
+          </View>
+        )}
+      </ImageBackground>
+    </View>
   );
 };
 
@@ -140,8 +150,18 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+  },
+  innerContainer: {
+    flex: 1,
     padding: 15,
     paddingBottom: 100,
+    paddingTop: 20, // Add padding to the top
+  },
+  loadingContainer: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -50 }, { translateY: -50 }],
   },
   pinnedTitle: {
     color: '#FFFFFF',

@@ -1,50 +1,71 @@
-import React, { useRef, useEffect } from 'react';
-import { StyleSheet, Text, View, Pressable, Animated, ImageBackground, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Pressable, ImageBackground, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import * as Contacts from 'expo-contacts';
 
 export default function AllowContactAccess() {
   const navigation = useNavigation();
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const requestContactsPermission = async () => {
-    if ("contacts" in navigator && "ContactsManager" in window) {
-      try {
-        const contacts = await navigator.contacts.select(['name', 'email'], { multiple: true });
+    const { status } = await Contacts.requestPermissionsAsync();
+    if (status === 'granted') {
+      const { data } = await Contacts.getContactsAsync({
+        fields: [Contacts.Fields.Emails],
+      });
+
+      if (data.length > 0) {
         console.log('Contacts permission granted');
-        console.log(contacts);
+        console.log(data);
         Alert.alert('Contacts permission granted');
-      } catch (error) {
-        console.log('Contacts permission denied', error);
-        Alert.alert('Contacts permission denied');
+      } else {
+        console.log('No contacts found');
+        Alert.alert('No contacts found');
       }
     } else {
-      console.log('Contacts API not supported in this browser.');
-      Alert.alert('Contacts API not supported in this browser.');
+      console.log('Contacts permission denied');
+      Alert.alert('Contacts permission denied');
     }
-    navigation.navigate('LoginScreen');
+    navigation.navigate('Home');
   };
 
   const handleSkip = () => {
-    navigation.navigate('LoginScreen');
+    navigation.navigate('Home');
   };
 
   return (
+    <View style={styles.container}>
       <ImageBackground
         source={require('../../public/assets/AllowContact.png')} // replace with your image path
         style={styles.background}
+        onLoad={() => setIsImageLoaded(true)}
       >
-        <View style={styles.buttonContainer}>
-          <Pressable onPress={requestContactsPermission} style={styles.button}>
-            <Text style={styles.buttonText}>Turn on Contacts Sharing</Text>
-          </Pressable>
-          <Pressable onPress={handleSkip} style={styles.skipButton}>
-            <Text style={styles.skipButtonText}>Skip</Text>
-          </Pressable>
-        </View>
+        {!isImageLoaded && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        )}
+        {isImageLoaded && (
+          <View style={styles.buttonContainer}>
+            <Pressable onPress={requestContactsPermission} style={styles.button}>
+              <Text style={styles.buttonText}>Turn on Contacts Sharing</Text>
+            </Pressable>
+            <Pressable onPress={handleSkip} style={styles.skipButton}>
+              <Text style={styles.skipButtonText}>Skip</Text>
+            </Pressable>
+          </View>
+        )}
       </ImageBackground>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   background: {
     flex: 1,
     width: '100%',
@@ -52,16 +73,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  loadingContainer: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -50 }, { translateY: -50 }],
   },
   buttonContainer: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
-    marginBottom: 180, // Adjust this value to control the distance from the bottom
+    marginBottom: 160, // Adjust this value to control the distance from the bottom
   },
   button: {
     backgroundColor: '#F6F7B0',

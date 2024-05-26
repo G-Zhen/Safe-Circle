@@ -21,7 +21,7 @@ export default function LoginScreen() {
       setUser(user);
       setLoading(false);
       if (user) {
-        navigation.navigate('TabBar');
+        navigation.navigate('AllowNotifications');
       }
     });
 
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#000',
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: '600', // Use '600' instead of 'semibold' for bold text
   },
   googleButton: {
@@ -186,13 +186,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   googleIcon: {
-    width: 20,
-    height: 20,
+    width: 16,
+    height: 16,
     marginRight: 10, // Space between the icon and text
   },
   googleButtonText: {
     color: '#000',
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: '600', // Use '600' instead of 'semibold' for bold text
   },
   orText: {

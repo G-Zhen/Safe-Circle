@@ -1,19 +1,25 @@
-import React from 'react';
-import { useNavigation } from '@react-navigation/native';
+import React, { useEffect } from 'react';
+import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 
 const TabBar = () => {
     const navigation = useNavigation();
+    const navigationState = useNavigationState(state => state);
 
     const tabs = [
         { id: 'Home', label: 'Explore', icon: require('../public/assets/icon-location.png') },
         { id: 'Contacts', label: 'Contacts', icon: require('../public/assets/icon-contact.png') },
-        { id: 'Resources', label: 'Resources', icon: require('../public/assets/icon-resources.png') },
+        { id: 'Resources', label: 'Resource', icon: require('../public/assets/icon-resources.png') },
         { id: 'Profile', label: 'Profile', icon: require('../public/assets/icon-mark.png') },
         { id: 'Settings', label: 'Settings', icon: require('../public/assets/icon-setting.png') },
     ];
 
     const [activeTab, setActiveTab] = React.useState(tabs[0].id);
+
+    useEffect(() => {
+        const currentRouteName = navigationState.routes[navigationState.index].name;
+        setActiveTab(currentRouteName);
+    }, [navigationState]);
 
     const handleTabChange = (route) => {
         setActiveTab(route);
@@ -25,7 +31,7 @@ const TabBar = () => {
             {tabs.map(tab => (
                 <TouchableOpacity
                     key={tab.id}
-                    style={[styles.tab, activeTab === tab.id && styles.activeTab]}
+                    style={styles.tab}
                     onPress={() => handleTabChange(tab.id)}
                 >
                     <Image source={tab.icon} style={styles.iconStyle} />
@@ -66,12 +72,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     activeTabText: {
-        color: '#17156F',
+        color: '#7976CB', // Active tab text color
         fontWeight: 'bold',
-    },
-    activeTab: {
-        borderBottomWidth: 2,
-        borderBottomColor: '#17156F',
     },
 });
 

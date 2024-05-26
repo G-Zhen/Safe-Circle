@@ -1,30 +1,40 @@
-import React, { useRef, useEffect } from 'react';
-import { StyleSheet, Text, View, Pressable, Animated, ImageBackground, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Pressable, ImageBackground, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import * as Location from 'expo-location';
 
 export default function AllowLocationShare() {
   const navigation = useNavigation();
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [isRequestingLocation, setIsRequestingLocation] = useState(false);
 
-  const requestLocationPermission = () => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          console.log('Location permission granted');
-          console.log(position);
-          Alert.alert('Location permission granted');
-          navigation.navigate('AllowContactAccess');
-        },
-        (error) => {
-          console.log('Location permission denied', error);
-          Alert.alert('Location permission denied');
-          navigation.navigate('AllowContactAccess');
-        },
-        { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-      );
-    } else {
-      console.log('Geolocation API not supported in this browser.');
-      Alert.alert('Geolocation API not supported in this browser.');
+  const requestLocationPermission = async () => {
+    setIsRequestingLocation(true);
+    try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Location permission denied');
+        navigation.navigate('AllowContactAccess');
+        setIsRequestingLocation(false);
+        return;
+      }
+
+      let location = await Location.getLastKnownPositionAsync({});
+      if (!location) {
+        location = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+          timeout: 20000, // Set a timeout of 20 seconds
+        });
+      }
+
+      console.log('Location permission granted');
+      console.log(location);
+      Alert.alert('Location permission granted');
       navigation.navigate('AllowContactAccess');
+    } catch (error) {
+      Alert.alert('Failed to fetch location', 'Please try again.');
+    } finally {
+      setIsRequestingLocation(false);
     }
   };
 
@@ -33,23 +43,44 @@ export default function AllowLocationShare() {
   };
 
   return (
+    <View style={styles.container}>
       <ImageBackground
-        source={require('../../public/assets/AllowLocation.png')} // replace with your image path
+        source={require('../../public/assets/AllowLocation.png')}
         style={styles.background}
+        onLoad={() => setIsImageLoaded(true)}
       >
-        <View style={styles.buttonContainer}>
-          <Pressable onPress={requestLocationPermission} style={styles.button}>
-            <Text style={styles.buttonText}>Turn on Location Sharing</Text>
-          </Pressable>
-          <Pressable onPress={handleSkip} style={styles.skipButton}>
-            <Text style={styles.skipButtonText}>Skip</Text>
-          </Pressable>
-        </View>
+        {!isImageLoaded && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        )}
+        {isImageLoaded && (
+          <View style={styles.buttonContainer}>
+            {isRequestingLocation ? (
+              <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
+              <>
+                <Pressable onPress={requestLocationPermission} style={styles.button}>
+                  <Text style={styles.buttonText}>Turn on Location Sharing</Text>
+                </Pressable>
+                <Pressable onPress={handleSkip} style={styles.skipButton}>
+                  <Text style={styles.skipButtonText}>Skip</Text>
+                </Pressable>
+              </>
+            )}
+          </View>
+        )}
       </ImageBackground>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   background: {
     flex: 1,
     width: '100%',
@@ -57,23 +88,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  loadingContainer: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -50 }, { translateY: -50 }],
   },
   buttonContainer: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
-    marginBottom: 180, // Adjust this value to control the distance from the bottom
+    marginBottom: 160,
   },
   button: {
     backgroundColor: '#F6F7B0',
     padding: 10,
     borderRadius: 20,
     width: 370,
-    marginBottom: 10, // Add some space between the buttons
+    marginBottom: 10,
   },
   buttonText: {
     color: 'black',
@@ -82,8 +114,8 @@ const styles = StyleSheet.create({
     fontWeight: 'semibold',
   },
   skipButton: {
-    marginTop: 10, // Add some space between the buttons
-    backgroundColor: '#E7E1FA', // Different background color for skip button
+    marginTop: 10,
+    backgroundColor: '#E7E1FA',
     padding: 10,
     borderRadius: 20,
     width: 370,

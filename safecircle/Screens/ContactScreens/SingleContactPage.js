@@ -1,12 +1,55 @@
-import React from 'react';
-import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, ImageBackground, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, ImageBackground, Dimensions, Alert } from 'react-native';
 import { useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 
 const SingleContactPage = () => {
   const route = useRoute();
   const { contact } = route.params;
+  const [isEditable, setIsEditable] = useState(false);
+  const [contactInfo, setContactInfo] = useState({
+    name: contact.name,
+    phone: contact.phoneNumbers ? contact.phoneNumbers.map(p => p.number).join(', ') : 'N/A',
+    email: '',
+    address: '',
+  });
+
+  useEffect(() => {
+    const loadContactInfo = async () => {
+      try {
+        const savedContact = await AsyncStorage.getItem(contact.id);
+        if (savedContact) {
+          setContactInfo(JSON.parse(savedContact));
+        }
+      } catch (error) {
+        console.error('Failed to load contact info:', error);
+      }
+    };
+
+    loadContactInfo();
+  }, [contact.id]);
+
+  const handleEditPress = async () => {
+    if (isEditable) {
+      try {
+        await AsyncStorage.setItem(contact.id, JSON.stringify(contactInfo));
+        Alert.alert('Contact saved');
+      } catch (error) {
+        console.error('Failed to save contact info:', error);
+        Alert.alert('Failed to save contact');
+      }
+    }
+    setIsEditable(!isEditable);
+  };
+
+  const handleChange = (key, value) => {
+    setContactInfo({
+      ...contactInfo,
+      [key]: value,
+    });
+  };
 
   return (
     <ImageBackground
@@ -25,15 +68,42 @@ const SingleContactPage = () => {
           <Image style={styles.profileImage} source={require('../../public/assets/ProfileIcon.png')} />
           <View style={styles.profileInfo}>
             <Text style={styles.name}>{contact.name}</Text>
-            <Text style={styles.contactInfo}>{contact.phone}</Text>
+            <Text style={styles.contactInfo}>{contact.phoneNumbers ? contact.phoneNumbers.map(p => p.number).join(', ') : 'N/A'}</Text>
           </View>
         </View>
-        <TextInput style={styles.input} placeholder="Name" value={contact.name} />
-        <TextInput style={styles.input} placeholder="Phone number" value={contact.phone} />
-        <TextInput style={styles.input} placeholder="Email" />
-        <TextInput style={styles.input} placeholder="Address" />
-        <TouchableOpacity style={styles.editButton}>
-          <Text style={styles.editButtonText}>Edit</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Name"
+          value={contactInfo.name}
+          editable={isEditable}
+          onChangeText={(text) => handleChange('name', text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Phone number"
+          value={contactInfo.phone}
+          editable={isEditable}
+          onChangeText={(text) => handleChange('phone', text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={contactInfo.email}
+          editable={isEditable}
+          onChangeText={(text) => handleChange('email', text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Address"
+          value={contactInfo.address}
+          editable={isEditable}
+          onChangeText={(text) => handleChange('address', text)}
+        />
+        <TouchableOpacity
+          style={[styles.editButton, isEditable ? styles.saveButton : styles.editButton]}
+          onPress={handleEditPress}
+        >
+          <Text style={styles.editButtonText}>{isEditable ? 'Save' : 'Edit'}</Text>
         </TouchableOpacity>
         <View style={styles.actionsContainer}>
           <TouchableOpacity style={styles.actionButton}>
@@ -112,7 +182,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     marginVertical: 18,
-    width: '90%', 
+    width: '90%',
     height: 39, // Full width for input fields
   },
   editButton: {
@@ -123,6 +193,9 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     alignSelf: 'flex-end',
     width: '40%', // Full width for the button
+  },
+  saveButton: {
+    backgroundColor: '#4CAF50', // Green color for save button
   },
   editButtonText: {
     fontSize: 16,
