@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, ImageBackground, Dimensions, Alert } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ImageBackground, Dimensions, Alert } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SMS from 'expo-sms';
+import * as Location from 'expo-location';
+import TabBar from '../TabBar';
 
 const { width, height } = Dimensions.get('window');
 
 const SingleContactPage = () => {
   const route = useRoute();
-  const { contact } = route.params;
-  const [isEditable, setIsEditable] = useState(false);
+  const { contact, isPinned, handlePin } = route.params;
   const [contactInfo, setContactInfo] = useState({
     name: contact.name,
-    phone: contact.phoneNumbers ? contact.phoneNumbers.map(p => p.number).join(', ') : 'N/A',
-    email: '',
-    address: '',
+    phone: contact.phoneNumbers ? contact.phoneNumbers.join(', ') : 'N/A',
   });
+  const [pinned, setPinned] = useState(isPinned);
 
   useEffect(() => {
     const loadContactInfo = async () => {
       try {
-        const savedContact = await AsyncStorage.getItem(contact.id);
+        const savedContact = await AsyncStorage.getItem(contact.contactID);
         if (savedContact) {
           setContactInfo(JSON.parse(savedContact));
         }
@@ -29,26 +30,35 @@ const SingleContactPage = () => {
     };
 
     loadContactInfo();
-  }, [contact.id]);
+  }, [contact.contactID]);
 
-  const handleEditPress = async () => {
-    if (isEditable) {
-      try {
-        await AsyncStorage.setItem(contact.id, JSON.stringify(contactInfo));
-        Alert.alert('Contact saved');
-      } catch (error) {
-        console.error('Failed to save contact info:', error);
-        Alert.alert('Failed to save contact');
+  const shareLocation = async () => {
+    try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission to access location was denied');
+        return;
       }
+
+      let location = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = location.coords;
+      const locationMessage = `Location is being shared through SafeCircle: https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+
+      const isAvailable = await SMS.isAvailableAsync();
+      if (isAvailable) {
+        await SMS.sendSMSAsync(contact.phoneNumbers, locationMessage);
+      } else {
+        Alert.alert('SMS is not available on this device');
+      }
+    } catch (error) {
+      console.error('Error sharing location:', error);
+      Alert.alert('Error', 'An error occurred while trying to share the location');
     }
-    setIsEditable(!isEditable);
   };
 
-  const handleChange = (key, value) => {
-    setContactInfo({
-      ...contactInfo,
-      [key]: value,
-    });
+  const togglePin = () => {
+    handlePin(contact);
+    setPinned(!pinned);
   };
 
   return (
@@ -57,63 +67,23 @@ const SingleContactPage = () => {
       style={styles.background}
     >
       <View style={styles.container}>
-        <View style={styles.header}>
-          <View style={styles.statusWrapper}>
-            <View style={styles.statusContainer}>
-              <Text style={styles.statusText}>Farahnaz's Status: Safe</Text>
-            </View>
-          </View>
-        </View>
         <View style={styles.profileContainer}>
           <Image style={styles.profileImage} source={require('../../public/assets/ProfileIcon.png')} />
           <View style={styles.profileInfo}>
             <Text style={styles.name}>{contact.name}</Text>
-            <Text style={styles.contactInfo}>{contact.phoneNumbers ? contact.phoneNumbers.map(p => p.number).join(', ') : 'N/A'}</Text>
+            <Text style={styles.contactInfo}>{contact.phoneNumbers ? contact.phoneNumbers.join(', ') : 'N/A'}</Text>
           </View>
         </View>
-        <TextInput
-          style={styles.input}
-          placeholder="Name"
-          value={contactInfo.name}
-          editable={isEditable}
-          onChangeText={(text) => handleChange('name', text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Phone number"
-          value={contactInfo.phone}
-          editable={isEditable}
-          onChangeText={(text) => handleChange('phone', text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={contactInfo.email}
-          editable={isEditable}
-          onChangeText={(text) => handleChange('email', text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Address"
-          value={contactInfo.address}
-          editable={isEditable}
-          onChangeText={(text) => handleChange('address', text)}
-        />
-        <TouchableOpacity
-          style={[styles.editButton, isEditable ? styles.saveButton : styles.editButton]}
-          onPress={handleEditPress}
-        >
-          <Text style={styles.editButtonText}>{isEditable ? 'Save' : 'Edit'}</Text>
-        </TouchableOpacity>
         <View style={styles.actionsContainer}>
-          <TouchableOpacity style={styles.actionButton}>
-            <Text style={styles.actionButtonText}>Pin Profile</Text>
+          <TouchableOpacity style={styles.actionButton} onPress={togglePin}>
+            <Text style={styles.actionButtonText}>{pinned ? 'Unpin Profile' : 'Pin Profile'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
+          <TouchableOpacity style={styles.actionButton} onPress={shareLocation}>
             <Text style={styles.actionButtonText}>Share Location</Text>
           </TouchableOpacity>
         </View>
       </View>
+      <TabBar />
     </ImageBackground>
   );
 };
@@ -129,28 +99,10 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    width: width * 0.9, // Adjust width as needed
+    width: width * 0.9,
     padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  header: {
-    width: '100%',
-    marginBottom: 20,
-  },
-  statusWrapper: {
-    width: '100%',
-    alignItems: 'flex-end',
-  },
-  statusContainer: {
-    backgroundColor: '#B9E0D3',
-    borderRadius: 10,
-    paddingVertical: 10, // Increased padding
-    paddingHorizontal: 20, // Increased padding
-  },
-  statusText: {
-    fontSize: 16,
-    color: 'black',
   },
   profileContainer: {
     flexDirection: 'row',
@@ -177,42 +129,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'black',
   },
-  input: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    padding: 10,
-    marginVertical: 18,
-    width: '90%',
-    height: 39, // Full width for input fields
-  },
-  editButton: {
-    backgroundColor: '#FFD700',
-    borderRadius: 10,
-    padding: 10,
-    alignItems: 'center',
-    marginVertical: 10,
-    alignSelf: 'flex-end',
-    width: '40%', // Full width for the button
-  },
-  saveButton: {
-    backgroundColor: '#4CAF50', // Green color for save button
-  },
-  editButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
   actionsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginVertical: 10,
-    width: '100%', // Full width for the container
+    width: '100%',
   },
   actionButton: {
     backgroundColor: '#E9E4F9',
     borderRadius: 10,
     padding: 10,
     alignItems: 'center',
-    width: '45%', // Adjust width for action buttons
+    width: '45%',
   },
   actionButtonText: {
     fontSize: 16,

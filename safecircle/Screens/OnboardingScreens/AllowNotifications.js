@@ -2,35 +2,35 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, Pressable, ImageBackground, Alert, ActivityIndicator, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 
 export default function AllowNotifications() {
   const navigation = useNavigation();
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const requestNotificationPermission = async () => {
-    try {
-      // Check existing notification permissions
+  const registerForPushNotificationsAsync = async () => {
+    setLoading(true);
+    let token;
+    if (Constants.isDevice) {
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
 
-      // Request permissions if not already granted
       if (existingStatus !== 'granted') {
         const { status } = await Notifications.requestPermissionsAsync();
         finalStatus = status;
       }
 
-      // If permissions are not granted, show an alert and navigate to the next screen
       if (finalStatus !== 'granted') {
         Alert.alert('Failed to get push token for push notification!');
+        setLoading(false);
         navigation.navigate('AllowLocationShare');
         return;
       }
 
-      // Get the Expo push token (with a deprecation warning if projectId is not specified)
-      const token = (await Notifications.getExpoPushTokenAsync()).data;
+      token = (await Notifications.getExpoPushTokenAsync()).data;
       console.log('Expo push token:', token);
 
-      // Configure notification channel for Android
       if (Platform.OS === 'android') {
         await Notifications.setNotificationChannelAsync('default', {
           name: 'default',
@@ -40,17 +40,27 @@ export default function AllowNotifications() {
         });
       }
 
-      // Show success alert and navigate to the next screen
       Alert.alert('Notification permissions granted');
-      navigation.navigate('AllowLocationShare');
-    } catch (error) {
-      console.error('Error requesting notification permission:', error);
-      Alert.alert('An error occurred while requesting notification permissions.');
+    } else {
+      Alert.alert('Must use physical device for Push Notifications');
     }
+
+    setLoading(false);
+    navigation.navigate('AllowLocationShare');
+    return token;
   };
 
   const handleSkip = () => {
     navigation.navigate('AllowLocationShare');
+  };
+
+  const handlePress = async () => {
+    if (__DEV__) {
+      Alert.alert('Development Mode', 'Push notifications are not available in development mode.');
+      navigation.navigate('AllowLocationShare');
+    } else {
+      await registerForPushNotificationsAsync();
+    }
   };
 
   return (
@@ -67,7 +77,7 @@ export default function AllowNotifications() {
         )}
         {isImageLoaded && (
           <View style={styles.buttonContainer}>
-            <Pressable onPress={requestNotificationPermission} style={styles.button}>
+            <Pressable onPress={handlePress} style={styles.button}>
               <Text style={styles.buttonText}>Turn on Notifications</Text>
             </Pressable>
             <Pressable onPress={handleSkip} style={styles.skipButton}>
@@ -76,6 +86,11 @@ export default function AllowNotifications() {
           </View>
         )}
       </ImageBackground>
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      )}
     </View>
   );
 }
@@ -103,16 +118,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
-    marginBottom: 160, // Adjust this value to control the distance from the bottom
+    marginBottom: 160,
   },
   button: {
     backgroundColor: '#F6F7B0',
     padding: 10,
     borderRadius: 20,
     width: 370,
-    marginBottom: 10, // Add some space between the buttons
+    marginBottom: 10,
     borderWidth: 3,
-
   },
   buttonText: {
     color: 'black',
@@ -121,19 +135,27 @@ const styles = StyleSheet.create({
     fontWeight: 'semibold',
   },
   skipButton: {
-    marginTop: 10, // Add some space between the buttons
-    backgroundColor: '#E7E1FA', // Different background color for skip button
+    marginTop: 10,
+    backgroundColor: '#E7E1FA',
     padding: 10,
     borderRadius: 20,
     width: 370,
     borderWidth: 3,
-
   },
   skipButtonText: {
     color: 'black',
     fontSize: 20,
     textAlign: 'center',
     fontWeight: 'semibold',
-    
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
 });

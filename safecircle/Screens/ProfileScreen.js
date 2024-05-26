@@ -145,21 +145,23 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 10,
+    borderRadius: 20,
     padding: 10,
-    marginVertical: 18,
+    marginVertical: 15,
     width: '90%',
-    height: 39,
+    height: 42,
     color: 'black', // Change text color to black
+    borderWidth: 1,
   },
   editButton: {
     backgroundColor: '#F6F7B0',
-    borderRadius: 10,
+    borderRadius: 20,
     padding: 10,
     alignItems: 'center',
     marginVertical: 10,
     alignSelf: 'flex-end',
     width: '40%', 
+    borderWidth: 3,
   },
   saveButton: {
     backgroundColor: '#92BDA6',

@@ -3,6 +3,11 @@
     "name": "safecircle",
     "slug": "safecircle",
     "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "ios": {
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app uses your location to track your movement and distance."

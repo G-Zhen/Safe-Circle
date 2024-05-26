@@ -13,12 +13,14 @@ export default function AllowContactAccess() {
     const { status } = await Contacts.requestPermissionsAsync();
     if (status === 'granted') {
       const { data } = await Contacts.getContactsAsync({
-        fields: [Contacts.Fields.Emails, Contacts.Fields.Name],
+        fields: [Contacts.Fields.Emails, Contacts.Fields.Name, Contacts.Fields.PhoneNumbers],
       });
 
       if (data.length > 0) {
         console.log('Contacts permission granted');
         Alert.alert('Contacts permission granted');
+        navigation.navigate('LocationTracking'); // Navigate to LocationTracking if permission is denied
+
 
         const user = auth.currentUser;
         if (user) {
@@ -27,37 +29,39 @@ export default function AllowContactAccess() {
 
           console.log('User UID and email :', [userId, userEmail]);
           console.log('Contacts array:', data);
-          //start
+
           const formattedContacts = data.map(contact => ({
             name: contact.name,
             contactID: contact.id,
+            phoneNumbers: contact.phoneNumbers ? contact.phoneNumbers.map(phone => phone.number) : [],
             firebase_UID: userId,
             user: userEmail,
           }));
 
           try {
             await addContact(formattedContacts);
-            navigation.navigate('Contacts'); // Navigate to ContactPage on success
+            navigation.navigate('LocationTracking'); // Navigate to LocationTracking on success
           } catch (error) {
             console.error('Error adding contacts: ', error);
-            //Alert.alert('Error adding contacts: ', error.message);
+            Alert.alert('Error adding contacts: ', error.message);
           }
         } else {
           console.error('No user is signed in.');
         }
-        //end
       } else {
         console.log('No contacts found');
         Alert.alert('No contacts found');
+        navigation.navigate('LocationTracking'); // Navigate to LocationTracking even if no contacts are found
       }
     } else {
       console.log('Contacts permission denied');
       Alert.alert('Contacts permission denied');
+      navigation.navigate('LocationTracking'); // Navigate to LocationTracking if permission is denied
     }
   };
 
   const handleSkip = () => {
-    navigation.navigate('Contacts'); // Ensure you navigate to the ContactPage
+    navigation.navigate('LocationTracking'); // Navigate to LocationTracking
   };
 
   return (
@@ -118,6 +122,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     width: 370,
     marginBottom: 10, // Add some space between the buttons
+    borderWidth: 3,
   },
   buttonText: {
     color: 'black',
@@ -131,6 +136,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 20,
     width: 370,
+    borderWidth: 3,
   },
   skipButtonText: {
     color: 'black',

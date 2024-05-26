@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     tab: {
         flex: 1,
         alignItems: 'center',
-        padding: 10,
+        padding: 10
     },
     iconStyle: {
         width: 25,
@@ -138,6 +138,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 5,
         marginHorizontal: 10,
+        borderWidth: 3,
     },
     sosButtonText: {
         color: 'white',

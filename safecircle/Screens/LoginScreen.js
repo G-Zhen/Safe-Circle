@@ -140,6 +140,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     alignItems: 'center',
+    borderWidth: 3,
+
   },
   title: {
     fontSize: 30,

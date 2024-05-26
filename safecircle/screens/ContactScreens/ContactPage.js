@@ -5,7 +5,10 @@ import Fuse from 'fuse.js';
 import TabBar from '../TabBar';
 import Header from '../Header';
 import { getContacts } from '../../Backend/firebase/addContact';
-// good works but slow
+import * as SMS from 'expo-sms';
+import * as Location from 'expo-location';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const { width, height } = Dimensions.get('window');
 
 const ContactPage = () => {
@@ -13,10 +16,12 @@ const ContactPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredContacts, setFilteredContacts] = useState([]);
   const [contacts, setContacts] = useState([]);
+  const [pinnedContacts, setPinnedContacts] = useState([]);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   useEffect(() => {
     fetchContacts();
+    fetchPinnedContacts();
   }, []);
 
   const fetchContacts = async () => {
@@ -25,8 +30,29 @@ const ContactPage = () => {
     setFilteredContacts(userContacts);
   };
 
+  const fetchPinnedContacts = async () => {
+    const pinned = await AsyncStorage.getItem('pinnedContacts');
+    if (pinned) {
+      setPinnedContacts(JSON.parse(pinned));
+    }
+  };
+
+  const handlePin = async (contact) => {
+    const isPinned = pinnedContacts.some(c => c.contactID === contact.contactID);
+    let updatedPinnedContacts;
+
+    if (isPinned) {
+      updatedPinnedContacts = pinnedContacts.filter(c => c.contactID !== contact.contactID);
+    } else {
+      updatedPinnedContacts = [...pinnedContacts, contact];
+    }
+
+    setPinnedContacts(updatedPinnedContacts);
+    await AsyncStorage.setItem('pinnedContacts', JSON.stringify(updatedPinnedContacts));
+  };
+
   const fuse = new Fuse(contacts, {
-    keys: ['name', 'phone'],
+    keys: ['name', 'phoneNumbers'],
     includeScore: true,
   });
 
@@ -43,11 +69,27 @@ const ContactPage = () => {
 
   const handleShare = async (contact) => {
     try {
-      await Share.share({
-        message: `Contact Name: ${contact.name}\nPhone Number: ${contact.phone}`,
-      });
+      const phoneNumbers = contact.phoneNumbers;
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission to access location was denied');
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync({});
+      const message = `Location is being shared through SafeCircle: https://www.google.com/maps/search/?api=1&query=${location.coords.latitude},${location.coords.longitude}`;
+
+      if (await SMS.isAvailableAsync()) {
+        await SMS.sendSMSAsync(
+          phoneNumbers,
+          message
+        );
+      } else {
+        Alert.alert('SMS is not available on this device');
+      }
     } catch (error) {
-      Alert.alert('Error', 'An error occurred while trying to share the contact');
+      Alert.alert('Error', 'An error occurred while trying to share the location');
+      console.error(error);
     }
   };
 
@@ -75,13 +117,15 @@ const ContactPage = () => {
   };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => navigation.navigate('SingleContactPage', { contact: item })}>
+    <TouchableOpacity onPress={() => navigation.navigate('SingleContactPage', { contact: item, isPinned: pinnedContacts.some(c => c.contactID === item.contactID), handlePin })}>
       <View style={styles.contactItem}>
         <View style={styles.contactInfo}>
           <Image style={styles.contactImage} source={require('../../public/assets/ProfileIcon.png')} />
           <View>
             <Text style={styles.contactName}>{item.name}</Text>
-            <Text style={styles.contactPhone}>{item.phone}</Text>
+            {item.phoneNumbers.map((phone, index) => (
+              <Text key={index} style={styles.contactPhone}>{phone}</Text>
+            ))}
           </View>
         </View>
         <View style={styles.contactActions}>
@@ -114,23 +158,24 @@ const ContactPage = () => {
             <Header title="Emergency Contacts" />
             <Text style={styles.pinnedTitle}>Pinned:</Text>
             <View style={styles.pinnedContacts}>
-              {contacts.slice(0, 4).map(contact => (
-                <View key={contact.contactID} style={styles.pinnedContact}>
-                  <Image style={styles.pinnedImage} source={require('../../public/assets/ProfileIcon.png')} />
-                  <Text style={styles.pinnedName}>{contact.name}</Text>
-                </View>
+              {pinnedContacts.map(contact => (
+                <TouchableOpacity key={contact.contactID} onPress={() => navigation.navigate('SingleContactPage', { contact, isPinned: true, handlePin })}>
+                  <View style={styles.pinnedContact}>
+                    <Image style={styles.pinnedImage} source={require('../../public/assets/ProfileIcon.png')} />
+                    <Text style={styles.pinnedName}>{contact.name}</Text>
+                  </View>
+                </TouchableOpacity>
               ))}
             </View>
             <View style={styles.searchContainer}>
+              <Image source={require('../../public/assets/search-icon.png')} style={styles.searchIcon} />
               <TextInput
                 style={styles.searchInput}
                 placeholder="Search"
+                placeholderTextColor="#999999"
                 value={searchTerm}
                 onChangeText={handleSearch}
               />
-              <TouchableOpacity style={styles.addButton}>
-                <Text style={styles.addButtonText}>+</Text>
-              </TouchableOpacity>
             </View>
             <FlatList
               data={filteredContacts}
@@ -171,6 +216,8 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 18,
     marginBottom: 10,
+    fontWeight: 'semibold',
+    fontStyle: 'italic',
   },
   pinnedContacts: {
     flexDirection: 'row',
@@ -195,17 +242,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    padding: 5,
+    borderRadius: 20,
+    padding: 10,
     width: '100%',
     marginBottom: 10,
+    borderWidth: 4,
+  },
+  searchIcon: {
+    width: 30,
+    height: 30,
+    marginRight: 10,
+    marginLeft:5
   },
   searchInput: {
     flex: 1,
     padding: 10,
-    borderRadius: 10,
+    borderRadius: 20,
     backgroundColor: '#E6E6E6',
     marginRight: 10,
+    borderWidth: 2,
+    color: 'black',
   },
   addButton: {
     backgroundColor: '#FFD700',

@@ -122,6 +122,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginBottom: 15,
         opacity: 0.9,
+        borderWidth: 3
+
     },
     safetySection: {
         backgroundColor: '#E9E4F9',
@@ -129,6 +131,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginBottom: 15,
         opacity: 0.9,
+        borderWidth: 3
+
     },
     header: {
         fontSize: 20,
