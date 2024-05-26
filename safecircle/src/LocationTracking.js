@@ -132,7 +132,7 @@ class LocationTracking extends Component {
     const mode = 'walking'; // or 'driving', 'bicycling', 'transit'
 
     try {
-      const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${latitude},${longitude}&destination=${lat},${lng}&mode=${mode}&key=YOUR_API_KEY`;
+      const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${latitude},${longitude}&destination=${lat},${lng}&mode=${mode}&key=AIzaSyCV2lwVnGqfVudXiwNOf-mSjhEkCcU_4AY`;
 
       const response = await fetch(url);
       const data = await response.json();
@@ -179,7 +179,7 @@ class LocationTracking extends Component {
     return points;
   };
 
-  fetchSafetyRating = async (location) => {
+  /*fetchSafetyRating = async (location) => {
     const apiKey = 'YOUR_SAFETY_RATING_API_KEY';
     const url = `https://api.example.com/safetyRating?location=${location}&key=${apiKey}`;
     try {
@@ -197,7 +197,7 @@ class LocationTracking extends Component {
     catch (error) {
       console.error('Error fetching safety rating:', error);
     }
-  };
+  };*/
 
   onPlaceSelected = (data, details) => {
     if (details && details.geometry) {
@@ -214,7 +214,7 @@ class LocationTracking extends Component {
         destinationName: locationName,
       }, () => {
         this.getRouteDirections();
-        this.fetchSafetyRating(locationName);
+        /*this.fetchSafetyRating(locationName);*/
         this.slideUp();
       });
     } else {
@@ -288,7 +288,7 @@ class LocationTracking extends Component {
           onPress={this.onPlaceSelected}
           fetchDetails={true}
           query={{
-            key: 'YOUR_API_KEY',
+            key: 'AIzaSyCV2lwVnGqfVudXiwNOf-mSjhEkCcU_4AY',
             language: 'en',
           }}
           styles={{
