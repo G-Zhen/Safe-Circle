@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, Image, Linking, Platform } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, Image, Linking, Platform, ActivityIndicator } from 'react-native';
 import Header from './Header'; // Adjust the path as needed
 import TabBar from './TabBar'; 
 
@@ -11,6 +11,7 @@ const ResourcesScreen = () => {
     ];
 
     const [expandedId, setExpandedId] = useState(null);
+    const [isImageLoaded, setIsImageLoaded] = useState(false);
 
     const safetyMeasures = [
         { id: 'theft', title: 'Theft', points: ['Do not leave belongings unattended.', 'Use secure locks.', 'Be aware of your surroundings.'] },
@@ -35,57 +36,85 @@ const ResourcesScreen = () => {
     };
 
     return (
-        <ImageBackground source={require('../public/assets/plain-background.png')} style={styles.background}>
-            <Header title="Resources" />
-            <ScrollView contentContainerStyle={styles.container}>
-                <View style={styles.emergencySection}>
-                    <Text style={styles.header}>Emergency Numbers</Text>
-                    {emergencyNumbers.map((item, index) => (
-                        <TouchableOpacity key={index} onPress={() => makeCall(item.number)} style={styles.emergencyItem}>
-                            <Image source={item.icon} style={styles.iconStyle} />
-                            <Text style={styles.emergencyItemText}>{item.name}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
+        <View style={styles.container}>
+            <ImageBackground
+                source={require('../public/assets/plain-background.png')}
+                style={styles.background}
+                resizeMode="cover"
+                onLoad={() => setIsImageLoaded(true)}
+            >
+                {!isImageLoaded && (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color="#0000ff" />
+                    </View>
+                )}
+                {isImageLoaded && (
+                    <View style={styles.innerContainer}>
+                        <Header title="Resources" />
+                        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+                            <View style={styles.emergencySection}>
+                                <Text style={styles.header}>Emergency Numbers</Text>
+                                {emergencyNumbers.map((item, index) => (
+                                    <TouchableOpacity key={index} onPress={() => makeCall(item.number)} style={styles.emergencyItem}>
+                                        <Image source={item.icon} style={styles.iconStyle} />
+                                        <Text style={styles.emergencyItemText}>{item.name}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
 
-                <View style={styles.safetySection}>
-                    <Text style={styles.header}>Safety Measures in case of Emergencies</Text>
-                    {safetyMeasures.map(measure => (
-                        <View key={measure.id} style={styles.item}>
-                            <TouchableOpacity onPress={() => toggleExpand(measure.id)} style={styles.titleContainer}>
-                                <Image
-                                    source={expandedId === measure.id
-                                        ? require('../public/assets/icon-down-arrow.png')
-                                        : require('../public/assets/icon-right-arrow.png')}
-                                    style={styles.arrowIcon}
-                                />
-                                <Text style={styles.itemText}>{measure.title}</Text>
-                            </TouchableOpacity>
-                            {expandedId === measure.id && (
-                                <View style={styles.expandedSection}>
-                                    {measure.points.map((point, idx) => (
-                                        <Text key={idx} style={styles.bulletPoint}>• {point}</Text>
-                                    ))}
-                                </View>
-                            )}
-                        </View>
-                    ))}
-                </View>
-            </ScrollView>
-            <TabBar />
-        </ImageBackground>
+                            <View style={styles.safetySection}>
+                                <Text style={styles.header}>Safety Measures in case of Emergencies</Text>
+                                {safetyMeasures.map(measure => (
+                                    <View key={measure.id} style={styles.item}>
+                                        <TouchableOpacity onPress={() => toggleExpand(measure.id)} style={styles.titleContainer}>
+                                            <Image
+                                                source={expandedId === measure.id
+                                                    ? require('../public/assets/icon-down-arrow.png')
+                                                    : require('../public/assets/icon-right-arrow.png')}
+                                                style={styles.arrowIcon}
+                                            />
+                                            <Text style={styles.itemText}>{measure.title}</Text>
+                                        </TouchableOpacity>
+                                        {expandedId === measure.id && (
+                                            <View style={styles.expandedSection}>
+                                                {measure.points.map((point, idx) => (
+                                                    <Text key={idx} style={styles.bulletPoint}>• {point}</Text>
+                                                ))}
+                                            </View>
+                                        )}
+                                    </View>
+                                ))}
+                            </View>
+                        </ScrollView>
+                        <TabBar />
+                    </View>
+                )}
+            </ImageBackground>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
     background: {
         flex: 1,
         width: '100%',
         height: '100%',
     },
-    container: {
-        padding: 15,
+    innerContainer: {
+        flex: 1,
         paddingBottom: 100,
+    },
+    scrollViewContainer: {
+        padding: 15,
+    },
+    loadingContainer: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: [{ translateX: -50 }, { translateY: -50 }],
     },
     emergencySection: {
         backgroundColor: '#F6F7B0',
