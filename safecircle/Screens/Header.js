@@ -19,7 +19,7 @@ const Header = ({ title }) => {
 
 const styles = StyleSheet.create({
     headerContainer: {
-        marginTop: 15,
+        marginTop: 80,
         padding: 15,
         paddingRight: 30,
     },
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     },
     statusButton: {
         padding: 10,
-        width: 180,
+        width: 200,
         borderRadius: 30,
         marginTop: 5,
         justifyContent: 'center',
