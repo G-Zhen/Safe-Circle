@@ -9,7 +9,12 @@ Imagine having a personal safety companion in your pocket, always ready to help 
     * Hannah Huynh @hannahnh
     * Farahnaz Hoque @farahnazhoque
 
-# Dev notes
+## POST HACKATHON
+```diff
++ Overall Hack Runner-Up!
+```
+* note Youtube demo video privated to respect privacy of contacts' phone numbers. 
+## Dev notes
 ### env
 Firebase web project configurations. 
 ```
